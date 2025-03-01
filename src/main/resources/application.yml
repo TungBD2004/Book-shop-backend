@@ -16,6 +16,6 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/book_store?autoReconnect=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/book_shop?autoReconnect=true&useSSL=false
     username: root
     password: 1122004mc
