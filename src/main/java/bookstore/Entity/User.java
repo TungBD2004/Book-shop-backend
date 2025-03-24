@@ -1,11 +1,14 @@
 package bookstore.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,6 +24,7 @@ public class User {
     @Column(length = 254, unique = true, nullable = false)
     private String email;
 
+    @Size(min = 5, max = 254)
     @Column(name = "password_hash")
     private String password;
 
@@ -36,5 +40,7 @@ public class User {
     @Column(name = "description")
     private String desscription;
 
-
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
+    @JsonManagedReference
+    private List<UserRole> userRoles = new ArrayList<>();
 }

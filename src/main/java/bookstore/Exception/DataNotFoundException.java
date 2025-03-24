@@ -9,10 +9,10 @@ import org.zalando.problem.ThrowableProblem;
 public class DataNotFoundException extends ThrowableProblem {
 
     private final String errMessage;
-    private final String code;
-    private final String object;
+    private final Long code;
+    private final Object object;
 
-    public DataNotFoundException(String errMessage, String code, String object) {
+    public DataNotFoundException(String errMessage, Long code, Object object) {
         super();
         this.errMessage = errMessage;
         this.code = code;

@@ -6,17 +6,16 @@ import org.zalando.problem.ThrowableProblem;
 
 @Getter
 @Setter
-public class PermissionDeniedException extends ThrowableProblem {
+public class BookShopAuthenticationException extends ThrowableProblem {
 
     private final String errMessage;
     private final Long code;
     private final Object object;
 
-    public PermissionDeniedException(String errMessage, Long code, Object object) {
+    public BookShopAuthenticationException(String errMessage, Long code, Object object) {
         super();
         this.errMessage = errMessage;
         this.code = code;
         this.object = object;
     }
-
 }

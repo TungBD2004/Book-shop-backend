@@ -9,13 +9,26 @@ spring:
         hibernate:
           dialect: org.hibernate.dialect.MySQL8Dialect
           enable_lazy_load_no_trans: true
-    show-sql: true
+    show-sql: false  # Tắt log SQL
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false  # Tắt format SQL log
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/book_shop?autoReconnect=true&useSSL=false
     username: root
     password: 1122004mc
+  jwt:
+    signerKey: "4FeXWK+GkmP9QBx92WgUsIrrJ738N7Z/t+5YL4XKnqpGGlV5u+gP+xp5NIezvy8l"
+    valid-duration: 3600 # in seconds
+    refreshable-duration: 36000 # in seconds
+  cors:
+    allowed-origins:
+      - "http://10.209.91.204:4200"
+      - "http://localhost:4200"
+
+logging:
+  level:
+    org.hibernate.orm.connections.pooling: ERROR
+
