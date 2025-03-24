@@ -22,10 +22,6 @@ public class Product {
     @Column(name = "price")
     private Long price;
 
-    @Size(max = 254)
-    @Column(name ="catagory")
-    private String catagory;
-
     @Column(name = "quantity")
     private Long quantity;
 
@@ -37,4 +33,7 @@ public class Product {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
