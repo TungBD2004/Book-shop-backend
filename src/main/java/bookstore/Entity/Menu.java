@@ -24,6 +24,4 @@ public class Menu {
     @Column(name = "description")
     private String description;
 
-    @Column(name ="parent_id")
-    private Long parentId;
 }
