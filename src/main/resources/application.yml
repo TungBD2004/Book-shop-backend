@@ -27,7 +27,11 @@ spring:
     allowed-origins:
       - "http://10.209.91.204:4200"
       - "http://localhost:4200"
-
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
+    api-docs:
+      path: /api-docs
 logging:
   level:
     org.hibernate.orm.connections.pooling: ERROR
