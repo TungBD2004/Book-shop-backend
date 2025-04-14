@@ -28,4 +28,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
         ASC LIMIT 1
     """)
     Optional<Role> findHighestRoleByUserId(@Param("userId") Long userId);
+
+    Role getRoleByName(String name);
 }

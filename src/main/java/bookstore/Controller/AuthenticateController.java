@@ -28,7 +28,7 @@ public class AuthenticateController {
         try {
             ert.setObject(authenticateService.authenticate(loginDTO));
             ert.setCode(ErrorCode.CODE_SUCCESS);
-            ert.setMessage("Đăng nhập thành công");
+            ert.setMessage(ErrorMessage.Common.LOGIN_SUCCESS);
         } catch (BookShopAuthenticationException e) {
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
@@ -42,7 +42,7 @@ public class AuthenticateController {
         try {
             ert.setObject(authenticateService.register(registerDTO));
             ert.setCode(ErrorCode.CODE_SUCCESS);
-            ert.setMessage(ErrorMessage.User.SUCCESS);
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
         } catch (BookShopAuthenticationException e) {
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getMessage());

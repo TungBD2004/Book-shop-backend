@@ -5,7 +5,6 @@ public class ErrorMessage {
     }
 
     public static class User{
-        public static final String SUCCESS = "Success";
         public static final String USER_NOT_FOUND = "Không tìm thấy người dùng";
         public static final String PERMISSION_DENIED = "Không có quyền truy cập!";
         public static final String EMAIL_OR_PASSWORD_INCORRECT = "Email hoặc mật khẩu không chính xác!";
@@ -15,4 +14,22 @@ public class ErrorMessage {
         public User() {
         }
     }
+    public static class Product{
+        public static final String PRODUCT_NOT_FOUND = "Không tìm thấy sách";
+    }
+    public static class ShopCart{
+        public static final String ADD_PRODUCT_TO_SHOPCART_WRONG = "Thêm sách không thành công";
+        public static final String PRODUCT_ON_SHOPCART_NOT_FOUND = "Không thêm thấy sách trong giỏ hàng";
+        public static final String REMOVE_PRODUCT_FROM_SHOPCART_SUCCESS = "Xoá sách trong giỏ hàng thành công";
+        public static final String ADD_PRODUCT_TO_SHOPCART_SUCCESS= "Thêm sách thành công vào giỏ hàng";
+        public static final String SHOPCART_IS_EMPTY = "Không có sách nào ở trong giỏ hàng";
+        public static final String SHOPCART_ALREADY_EXISTED = "Sách đã có trong giỏ hàng ";
+        public static final String SHOPCART_NOT_FOUND = "Không tìm thấy sách trong giỏ hàng";
+    }
+    public static class Common{
+        public static final String SUCCESS = "Thành công";
+        public static final String LOGIN_SUCCESS = "Đăng nhập thành công";
+
+    }
+
 }

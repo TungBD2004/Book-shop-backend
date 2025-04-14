@@ -54,7 +54,6 @@ public class AuthenticateService {
     public Object authenticate(LoginDTO loginDTO) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         try {
-            // Kiểm tra user tồn tại
             User user = userService.findByEmail(loginDTO.getEmail());
             if (user == null) {
                 throw new BookShopAuthenticationException(
@@ -63,8 +62,6 @@ public class AuthenticateService {
                         ErrorObject.USER
                 );
             }
-
-            // Kiểm tra mật khẩu
             boolean authenticated = passwordEncoder.matches(loginDTO.getPassword(), user.getPassword());
             if (!authenticated) {
                 throw new BookShopAuthenticationException(
@@ -74,7 +71,6 @@ public class AuthenticateService {
                 );
             }
 
-            // Lấy thông tin roles và menu
             List<Role> roles = roleService.getRoleByUserId(user.getId());
             List<String> roleName = userRoleService.getNameRoleByUserId(user.getId());
             Set<MenuDTO> menuDTOS = menuRoleService.getMenuDTO(roles, 26L);
@@ -94,7 +90,6 @@ public class AuthenticateService {
 
 
     public Object register(RegisterDTO registerDTO) {
-        // Kiểm tra email hợp lệ
         if (!isValidEmail(registerDTO.getEmail())) {
             throw new BookShopAuthenticationException(
                     ErrorMessage.User.USER_ALREADY_EXISTS,
@@ -103,7 +98,6 @@ public class AuthenticateService {
             );
         }
 
-        // Kiểm tra user đã tồn tại
         User user = userService.findByEmail(registerDTO.getEmail());
         if (user != null) {
             throw new BookShopAuthenticationException(
@@ -113,7 +107,6 @@ public class AuthenticateService {
             );
         }
 
-        // Kiểm tra mật khẩu khớp
         if (!registerDTO.getPassword().equals(registerDTO.getRePassword())) {
             throw new BookShopAuthenticationException(
                     ErrorMessage.User.RE_PASSWORD_NOT_MATCH,
@@ -121,7 +114,6 @@ public class AuthenticateService {
                     ErrorObject.USER
             );
         }
-        // Tạo user mới
         User newUser = new User();
         newUser.setEmail(registerDTO.getEmail());
         newUser.setName(registerDTO.getName());
@@ -133,8 +125,7 @@ public class AuthenticateService {
 
         userRepository.save(newUser);
 
-        // Gán role
-        Role roleUser = roleService.getRoleNameUser(3L);
+        Role roleUser = roleService.getRoleById(3L);
         UserRole userRole = new UserRole();
         userRole.setUser(newUser);
         userRole.setRole(roleUser);

@@ -40,19 +40,15 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://10.160.124.204:4200", "http://localhost:4200")); // Thêm localhost nếu cần
+                    config.setAllowedOrigins(List.of("*"));// Thêm localhost nếu cần
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
-                    config.setAllowCredentials(true);
+                    config.setAllowCredentials(false);
                     return config;
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()  // Thêm nếu frontend cần PUT
-                        .requestMatchers(HttpMethod.DELETE, "/api/**").permitAll() // Thêm nếu frontend cần DELETE
-                        .requestMatchers("/api/public/**").permitAll() // Thêm endpoint công khai nếu cần
+                        .requestMatchers("/api/**").permitAll() // Thêm nếu frontend cần DELETE
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )

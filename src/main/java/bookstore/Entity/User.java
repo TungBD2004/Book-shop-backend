@@ -43,4 +43,8 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
     @JsonManagedReference
     private List<UserRole> userRoles = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
+    @JsonManagedReference
+    private List<ShopCart> shopCarts = new ArrayList<>();
 }

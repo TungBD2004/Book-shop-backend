@@ -12,18 +12,15 @@ import java.util.List;
 @Repository
 public interface MenuRoleRepository extends JpaRepository<MenuRole, Long> {
 
-    @Query(value = "select m.id,m.name,m.parent_id,m.description from menu m " +
-            "join menu_role rhm on m.id=rhm.menu_id " +
-            "join role r on r.id=rhm.role_id " +
-            "where r.id=:id and parent_id =:parentId", nativeQuery = true)
-    List<Menu> getListMenuByRolesAndParent(@Param("id") Long id,@Param("parentId") Long parentId);
+    @Query(value = "SELECT m.id, m.name, m.parent_id, m.description FROM menu m " +
+            "JOIN menu_role rhm ON m.id = rhm.menu_id " +
+            "JOIN role r ON r.id = rhm.role_id " +
+            "WHERE r.id = :id AND parent_id = :parentId " +
+            "ORDER BY m.parent_id ASC, m.id ASC", nativeQuery = true)
+    List<Menu> getListMenuByRolesAndParent(@Param("id") Long id, @Param("parentId") Long parentId);
 
-    @Query(value = "select m.menu_id,m.menu_name,m.parent,m.menu_name_english from menu m " +
-            "join role_has_menu rhm on m.menu_id=rhm.menu_id " +
-            "join role r on r.role_id=rhm.role_id " +
-            "where r.role_id=:roleId and parent =:parent", nativeQuery = true)
-    List<Menu> findbyRoleidAndParent(@Param("roleId") Integer roleId,
-                                     @Param("parent") Integer parent);
+
+
 
 
 }

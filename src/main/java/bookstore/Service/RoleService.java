@@ -28,7 +28,12 @@ public class RoleService {
                 () -> new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.USER)
         );
     }
-    public Role getRoleNameUser(Long id) {
+
+    public Role getRoleByName(String name) {
+        return roleRepository.getRoleByName(name);
+    }
+
+    public Role getRoleById(Long id) {
         return roleRepository.findById(id).get();
     }
 }
