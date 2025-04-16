@@ -6,6 +6,7 @@ import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.Constant.ErrorObject;
+import bookstore.Exception.DataNotFoundException;
 import bookstore.Mapper.ProductMapper;
 import bookstore.Repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ProductService {
     public Object getProductById(Long id) {
         Product product = productRepository.findProductById(id);
         if(product == null) {
-            throw new BookShopAuthenticationException(ErrorMessage.Product.PRODUCT_NOT_FOUND,
+            throw new DataNotFoundException(ErrorMessage.Product.PRODUCT_NOT_FOUND,
                     ErrorCode.CODE_ERROR,ErrorObject.PRODUCT);
         }
         ProductDetailDTO dto = new ProductDetailDTO();
@@ -39,7 +40,7 @@ public class ProductService {
         List<ProductDetailDTO> productDetailDTOList = convertToProductDetailDTOList(products);
 
         if (productDetailDTOList.isEmpty()) {
-            throw new BookShopAuthenticationException(
+            throw new DataNotFoundException(
                     ErrorMessage.Product.PRODUCT_NOT_FOUND,
                     ErrorCode.CODE_ERROR,
                     ErrorObject.PRODUCT
@@ -72,9 +73,13 @@ public class ProductService {
         Product product = new Product();
         product =  productRepository.findProductById(id);
         if(product == null) {
-            throw new BookShopAuthenticationException(ErrorMessage.Product.PRODUCT_NOT_FOUND, ErrorCode.CODE_ERROR,ErrorObject.PRODUCT);
+            throw new DataNotFoundException(ErrorMessage.Product.PRODUCT_NOT_FOUND, ErrorCode.CODE_ERROR,ErrorObject.PRODUCT);
         }
         return product;
     }
+    public void save(Product product) {
+        productRepository.save(product);
+    }
+
 
 }

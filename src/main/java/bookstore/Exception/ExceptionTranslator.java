@@ -2,11 +2,21 @@ package bookstore.Exception;
 
 
 import bookstore.Exception.Constant.BSResponseEntity;
+import bookstore.Exception.Constant.ErrorCode;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionTranslator extends ResponseEntityExceptionHandler {
@@ -37,5 +47,23 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
                 BSResponseEntity.builder().message(ex.getErrMessage()).code(Long.valueOf(ex.getCode().toString())).object(ex.getObject()).build()
         );
     }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error ->   error.getDefaultMessage())
+                .orElse("Validation error");
+
+        BSResponseEntity response = BSResponseEntity.builder()
+                .code(ErrorCode.CODE_ERROR)
+                .message(errorMessage)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }
 

@@ -139,6 +139,7 @@ public class AuthenticateService {
         Role role = roleService.getHighestRole(user);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getEmail())
+                .subject(user.getName())
                 .issuer("")
                 .issueTime(new Date())
                 .expirationTime(new Date(

@@ -17,4 +17,5 @@ public interface ShopCartRepository extends JpaRepository<ShopCart, Long> {
     List<ShopCart> findByUserId(Long userId);
 
 
+
 }

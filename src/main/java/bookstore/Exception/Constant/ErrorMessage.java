@@ -26,6 +26,10 @@ public class ErrorMessage {
         public static final String SHOPCART_ALREADY_EXISTED = "Sách đã có trong giỏ hàng ";
         public static final String SHOPCART_NOT_FOUND = "Không tìm thấy sách trong giỏ hàng";
     }
+
+    public static class Bill{
+        public static final String  ORDER_SUCCESS = "Đặt hàng thành công";
+    }
     public static class Common{
         public static final String SUCCESS = "Thành công";
         public static final String LOGIN_SUCCESS = "Đăng nhập thành công";
