@@ -1,5 +1,6 @@
 package bookstore.Service;
 
+import bookstore.DTO.Product.ProductDTO;
 import bookstore.DTO.Product.ProductDetailDTO;
 import bookstore.Entity.Product;
 import bookstore.Exception.BookShopAuthenticationException;
@@ -9,8 +10,12 @@ import bookstore.Exception.Constant.ErrorObject;
 import bookstore.Exception.DataNotFoundException;
 import bookstore.Mapper.ProductMapper;
 import bookstore.Repository.ProductRepository;
+import bookstore.Request.ProductRequest.ProductDetailRequest;
+import bookstore.Util.BSUtil;
+import org.antlr.v4.runtime.misc.ObjectEqualityComparator;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +23,14 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
+    private final CategoryService categoryService;
+    private final BSUtil bsUtil;
+
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper, CategoryService categoryService, BSUtil bsUtil) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.categoryService = categoryService;
+        this.bsUtil = bsUtil;
     }
 
     public Object getProductById(Long id) {
@@ -56,7 +66,7 @@ public class ProductService {
     }
 
     public Object getProductMenu() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAllProducts();
         return convertToProductDetailDTOList(products);
     }
 
@@ -81,5 +91,50 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    private void mapProductDetail(ProductDetailRequest productDTO, Product product) throws IOException {
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setQuantity(productDTO.getQuantity());
+        product.setAuthor(productDTO.getAuthor());
+
+        String imageUrl = bsUtil.uploadImageBase64(productDTO.getImageUrl());
+        product.setImageUrl(imageUrl);
+
+        product.setCategory(categoryService.getByName(productDTO.getCategory()));
+    }
+    /*public Object addProduct(ProductDetailRequest productDetailRequest) {
+        Product product = new Product();
+        mapProductDetail(productDetailRequest, product);
+        productRepository.save(product);
+        return productMapper.toProductDTO(product);
+    }*/
+
+    public Object updateProduct(ProductDetailRequest productDTO) {
+        Product product = productRepository.findById(productDTO.getId())
+                .orElseThrow(() -> new DataNotFoundException(
+                        ErrorMessage.Product.PRODUCT_NOT_FOUND,
+                        ErrorCode.CODE_ERROR,
+                        ErrorObject.PRODUCT
+                ));
+
+        try {
+            mapProductDetail(productDTO, product);
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi upload ảnh lên Cloudinary", e);
+        }
+
+        productRepository.save(product);
+        return productMapper.toProductDTO(product);
+    }
+
+
+    public Object deleteProduct(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() ->
+                new DataNotFoundException(ErrorMessage.Product.PRODUCT_NOT_FOUND, ErrorCode.CODE_ERROR,ErrorObject.PRODUCT));
+        product.setIsDelete(true);
+        productRepository.save(product);
+        return null;
+    }
 
 }

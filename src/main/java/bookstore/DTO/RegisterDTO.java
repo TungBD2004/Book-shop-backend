@@ -15,15 +15,15 @@ import lombok.Setter;
 public class RegisterDTO {
 
     @NotBlank(message = "Tên không được để trống")
-    @Size(min =5 ,max = 50, message = "Tên không được dài quá 50 ký tự")
+    @Size(min =5 ,max = 50, message = "Tên không hợp lệ ")
     private String name;
 
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
-    @Size(min = 5 ,max = 254, message = "Email không được dài quá 254 ký tự")
+    @Size(min = 5 ,max = 254, message = "Email không hợp lệ")
     private String email;
 
-    @Size(min =5 ,max = 254, message = "Địa chỉ không được dài quá 254 ký tự")
+    @Size(min =5 ,max = 254, message = "Địa chỉ không hợp lệ ")
     private String address;
 
     @NotBlank(message = "Mật khẩu không được để trống")

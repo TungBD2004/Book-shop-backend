@@ -46,4 +46,7 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "product")
     @JsonManagedReference
     private List<ShopCart> shopCarts = new ArrayList<>();
+
+    @Column(name = "is_delete")
+    private Boolean isDelete = false;
 }

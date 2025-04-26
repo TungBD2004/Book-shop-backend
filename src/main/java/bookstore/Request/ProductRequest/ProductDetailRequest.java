@@ -1,36 +1,39 @@
 package bookstore.Request.ProductRequest;
 
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Data
-@Getter
-@Setter
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class ProductDetailRequest {
     private Long id;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
+    @Size(min = 3, max = 255, message = "Tên sản phẩm phải từ 3 đến 255 ký tự")
     private String name;
 
-    @Max(value = 1000000000, message = "Giá không được vượt quá 1 tỷ")
+    @NotNull(message = "Giá không được để trống")
+    @Min(value = 0, message = "Giá không được âm")
+    @Max(value = 1_000_000_000, message = "Giá không được vượt quá 1 tỷ")
     private Long price;
 
-    @Max(value = 10000, message = "Số lượng không được vượt quá 10.000")
+    @NotNull(message = "Số lượng không được để trống")
+    @Min(value = 0, message = "Số lượng không được âm")
+    @Max(value = 10_000, message = "Số lượng không được vượt quá 10.000")
     private Long quantity;
 
     @NotBlank(message = "Tác giả không được để trống")
+    @Size(min = 3, max = 255, message = "Tên tác giả phải từ 3 đến 255 ký tự")
     private String author;
 
     @NotBlank(message = "URL hình ảnh không được để trống")
     private String imageUrl;
 
-    @NotBlank(message = "Mô tả không được để trống")
-    private String description;
-
-    @NotBlank(message = "Thể loại không được để trống")
+    @NotBlank(message = "Tác giả không được để trống")
+    @Size(min = 3, max = 255, message = "Tên tác giả phải từ 3 đến 255 ký tự")
     private String category;
+    private String description;
 }

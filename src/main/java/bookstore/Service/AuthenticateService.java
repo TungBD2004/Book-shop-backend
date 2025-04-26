@@ -139,12 +139,9 @@ public class AuthenticateService {
         Role role = roleService.getHighestRole(user);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getEmail())
-                .subject(user.getName())
                 .issuer("")
                 .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(7, ChronoUnit.DAYS).toEpochMilli()
-                ))
+                .expirationTime(Date.from(Instant.now().plus(10, ChronoUnit.SECONDS)))
                 .claim("scope", role.getName())
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());

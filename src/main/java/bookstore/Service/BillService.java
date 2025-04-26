@@ -2,10 +2,7 @@ package bookstore.Service;
 
 import bookstore.DTO.Bill.CreateBillDTO;
 import bookstore.DTO.Product.ProductDetailDTO;
-import bookstore.Entity.Bill;
-import bookstore.Entity.BillProduct;
-import bookstore.Entity.Product;
-import bookstore.Entity.ShopCart;
+import bookstore.Entity.*;
 import bookstore.Repository.BillRepository;
 import bookstore.Request.BillRequest.CreateBillRequest;
 import bookstore.Util.BSUtil;
@@ -22,15 +19,17 @@ public class BillService {
     private final ShopCartService shopCartService;
     private final ProductService productService;
     private final BillProductService billProductService;
+    private final UserService userService;
     LocalDate localDate = LocalDate.now();
     private final BillRepository billRepository;
     private final BSUtil bsUtil;
-    public BillService(BillRepository billRepository, BSUtil bsUtil, ShopCartService shopCartService, ProductService productService, BillProductService billProductService) {
+    public BillService(BillRepository billRepository, BSUtil bsUtil, ShopCartService shopCartService, ProductService productService, BillProductService billProductService, UserService userService) {
         this.billRepository = billRepository;
         this.bsUtil = bsUtil;
         this.shopCartService = shopCartService;
         this.productService = productService;
         this.billProductService = billProductService;
+        this.userService = userService;
     }
 
     public Object addBill(CreateBillRequest createBillRequest) {
@@ -58,4 +57,11 @@ public class BillService {
         }
         return null;
     }
+
+    public Object getBillByUser(Long userId){
+        User user = userService.getUserById(userId);
+        List<Bill> bills = billRepository.findBillByUserId(userId);
+        return bills;
+    }
+
 }

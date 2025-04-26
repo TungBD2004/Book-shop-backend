@@ -40,11 +40,14 @@ public class User {
     @Column(name = "description")
     private String desscription;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
     @JsonManagedReference
     private List<UserRole> userRoles = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
     @JsonManagedReference
     private List<ShopCart> shopCarts = new ArrayList<>();
+
+    @Column(name = "is_delete")
+    private Boolean isDelete = false;
 }

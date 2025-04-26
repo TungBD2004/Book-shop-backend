@@ -4,6 +4,7 @@ import bookstore.Entity.Role;
 import bookstore.Entity.UserRole;
 import bookstore.Repository.UserRoleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,4 +25,8 @@ public class UserRoleService {
         userRoleRepository.save(userRole);
     }
 
+
+    public void delete(List<UserRole> userRole) {
+        userRoleRepository.deleteAll(userRole);
+    }
 }

@@ -11,12 +11,15 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) and p.isDelete = false ")
     List<Product> findByName(@Param("name") String name);
 
-    @Query(value = "select p From Product p where p.category.name = :category ")
+    @Query(value = "select p From Product p where p.category.name = :category and p.isDelete = FALSE ")
     List<Product> getProductsByCategory(@Param("category") String category);
 
-    Product findProductById(long id);
+    @Query(value = "select p From Product p where p.id = :id and p.isDelete = FALSE ")
+    Product findProductById(@Param("id") Long id);
 
+    @Query(value = "SELECT p FROM Product p where p.isDelete = FALSE ")
+    List<Product> findAllProducts();
 }
