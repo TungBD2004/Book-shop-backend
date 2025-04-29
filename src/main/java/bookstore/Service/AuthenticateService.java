@@ -141,7 +141,7 @@ public class AuthenticateService {
                 .subject(user.getEmail())
                 .issuer("")
                 .issueTime(new Date())
-                .expirationTime(Date.from(Instant.now().plus(10, ChronoUnit.SECONDS)))
+                .expirationTime(Date.from(Instant.now().plus(7, ChronoUnit.DAYS)))
                 .claim("scope", role.getName())
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());

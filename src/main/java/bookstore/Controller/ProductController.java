@@ -107,9 +107,9 @@ public class ProductController {
         return ResponseEntity.ok().body(ert);
     }
 
-   /* @PostMapping("/admin/product")
+    @PostMapping("/admin/product")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<BSResponseEntity> addProduct(@RequestBody ProductDetailRequest productDetailRequest) {
+    public ResponseEntity<BSResponseEntity> addProduct(@Valid @RequestBody ProductDetailRequest productDetailRequest) {
         BSResponseEntity ert = new BSResponseEntity();
         try{
             ert.setObject(productService.addProduct(productDetailRequest));
@@ -127,7 +127,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         return ResponseEntity.ok().body(ert);
-    }*/
+    }
 
     @PutMapping("/admin/product")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")

@@ -103,12 +103,16 @@ public class ProductService {
 
         product.setCategory(categoryService.getByName(productDTO.getCategory()));
     }
-    /*public Object addProduct(ProductDetailRequest productDetailRequest) {
+    public Object addProduct(ProductDetailRequest productDTO) {
         Product product = new Product();
-        mapProductDetail(productDetailRequest, product);
+        try {
+            mapProductDetail(productDTO, product);
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi upload ảnh lên Cloudinary", e);
+        }
         productRepository.save(product);
         return productMapper.toProductDTO(product);
-    }*/
+    }
 
     public Object updateProduct(ProductDetailRequest productDTO) {
         Product product = productRepository.findById(productDTO.getId())
