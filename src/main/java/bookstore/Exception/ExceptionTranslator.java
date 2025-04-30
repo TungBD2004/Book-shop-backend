@@ -62,7 +62,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
                 .code(ErrorCode.CODE_ERROR)
                 .message(errorMessage)
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

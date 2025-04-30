@@ -33,7 +33,6 @@ public class BillController {
     public ResponseEntity<BSResponseEntity> addBill(@Valid @RequestBody CreateBillRequest createBillRequest) {
         BSResponseEntity responseEntity = new BSResponseEntity();
         try {
-            // Xử lý nếu không có lỗi validation
             responseEntity.setObject(billService.addBill(createBillRequest));
             responseEntity.setCode(ErrorCode.CODE_SUCCESS);
             responseEntity.setMessage(ErrorMessage.Bill.ORDER_SUCCESS);

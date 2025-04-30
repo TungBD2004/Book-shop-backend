@@ -31,12 +31,10 @@ public class CategoryController {
         catch(DataInvalidException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.badRequest().body(ert);
         }
         catch (DataNotFoundException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         return ResponseEntity.ok().body(ert);
     }

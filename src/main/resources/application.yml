@@ -9,30 +9,42 @@ spring:
         hibernate:
           dialect: org.hibernate.dialect.MySQL8Dialect
           enable_lazy_load_no_trans: true
-    show-sql: false  # Tắt log SQL
+    show-sql: false
     properties:
       hibernate:
-        format_sql: false  # Tắt format SQL log
+        format_sql: false
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/book_shop?autoReconnect=true&useSSL=false
     username: root
     password: 1122004mc
+
   jwt:
     signerKey: "4FeXWK+GkmP9QBx92WgUsIrrJ738N7Z/t+5YL4XKnqpGGlV5u+gP+xp5NIezvy8l"
     valid-duration: 3600 # in seconds
     refreshable-duration: 36000 # in seconds
+
   cors:
     allowed-origins:
       - "http://10.209.91.204:4200"
       - "http://localhost:4200"
+
   springdoc:
     swagger-ui:
       path: /swagger-ui.html
     api-docs:
       path: /api-docs
+  data:
+    redis:
+      host: redis-11255.c8.us-east-1-3.ec2.redns.redis-cloud.com
+      port: 11255
+      username: default
+      password: OQTSh8n8kGrO3nWWx8OunyBp0kgU4qtA
+      database: 0
+      ssl:
+        enabled: false
 logging:
   level:
     org.hibernate.orm.connections.pooling: ERROR
-
+    org.springframework.data.redis: DEBUG

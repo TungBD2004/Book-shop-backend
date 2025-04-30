@@ -3,6 +3,7 @@ package bookstore.Service;
 import bookstore.DTO.LoginDTO;
 import bookstore.DTO.MenuDTO;
 import bookstore.DTO.RegisterDTO;
+import bookstore.DTO.RegisterRequest;
 import bookstore.Entity.Role;
 import bookstore.Entity.User;
 import bookstore.Entity.UserRole;
@@ -13,10 +14,13 @@ import bookstore.Exception.Constant.ErrorObject;
 import bookstore.Exception.DataInvalidException;
 import bookstore.Mapper.UserMapper;
 import bookstore.Repository.UserRepository;
+import bookstore.Request.LoginRequest;
 import bookstore.Security.JWTToken;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +34,8 @@ import java.util.regex.Pattern;
 @Service
 public class AuthenticateService {
     protected static final String SIGNER_KEY = "4FeXWK+GkmP9QBx92WgUsIrrJ738N7Z/t+5YL4XKnqpGGlV5u+gP+xp5NIezvy8l";
+    @Value("${spring.jwt.valid-duration}")
+    private long VALID_DURATION;
 
     private final UserService userService;
     private final UserMapper userMapper;
@@ -37,60 +43,60 @@ public class AuthenticateService {
     private final MenuRoleService menuRoleService;
     private final RoleService roleService;
     private final UserRepository userRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public AuthenticateService(UserService userService, UserMapper userMapper, UserRoleService userRoleService, MenuRoleService menuRoleService, RoleService roleService, UserRepository userRepository) {
+    public AuthenticateService(UserService userService, UserMapper userMapper, UserRoleService userRoleService,
+                               MenuRoleService menuRoleService, RoleService roleService, UserRepository userRepository
+    , RedisTemplate<String, String> redisTemplate) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.userRoleService = userRoleService;
         this.menuRoleService = menuRoleService;
         this.roleService = roleService;
         this.userRepository = userRepository;
+        this.redisTemplate = redisTemplate;
     }
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         Pattern pattern = Pattern.compile(emailRegex);
         return pattern.matcher(email).matches();
     }
-    public Object authenticate(LoginDTO loginDTO) {
+    public Object authenticate(LoginRequest loginRequest) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        try {
-            User user = userService.findByEmail(loginDTO.getEmail());
-            if (user == null) {
-                throw new BookShopAuthenticationException(
-                        ErrorMessage.User.USER_NOT_EXISTS,
-                        ErrorCode.CODE_ERROR,
-                        ErrorObject.USER
-                );
-            }
-            boolean authenticated = passwordEncoder.matches(loginDTO.getPassword(), user.getPassword());
-            if (!authenticated) {
-                throw new BookShopAuthenticationException(
-                        ErrorMessage.User.EMAIL_OR_PASSWORD_INCORRECT,
-                        ErrorCode.CODE_ERROR,
-                        ErrorObject.USER
-                );
-            }
-
-            List<Role> roles = roleService.getRoleByUserId(user.getId());
-            List<String> roleName = userRoleService.getNameRoleByUserId(user.getId());
-            Set<MenuDTO> menuDTOS = menuRoleService.getMenuDTO(roles, 26L);
-
-            // Tạo token và trả về response
-            var token = createToken(user);
-            return Map.of(
-                    "idToken", token,
-                    "user", userMapper.UserToUserDTO(user),
-                    "roles", roleName,
-                    "menuDTOS", menuDTOS
+        User user = userService.findByEmail(loginRequest.getEmail());
+        if (user == null) {
+            throw new BookShopAuthenticationException(
+                    ErrorMessage.User.USER_NOT_EXISTS,
+                    ErrorCode.CODE_ERROR,
+                    ErrorObject.USER
             );
-        } catch (BookShopAuthenticationException e) {
-            throw e;
         }
+        boolean authenticated = passwordEncoder.matches(loginRequest.getPassword(), user.getPassword());
+        if (!authenticated) {
+            throw new BookShopAuthenticationException(
+                    ErrorMessage.User.EMAIL_OR_PASSWORD_INCORRECT,
+                    ErrorCode.CODE_ERROR,
+                    ErrorObject.USER
+            );
+        }
+
+        List<Role> roles = roleService.getRoleByUserId(user.getId());
+        List<String> roleName = userRoleService.getNameRoleByUserId(user.getId());
+        Set<MenuDTO> menuDTOS = menuRoleService.getMenuDTO(roles, 26L);
+
+        // Tạo token và trả về response
+        var token = createToken(user);
+        return Map.of(
+                "idToken", token,
+                "user", userMapper.UserToUserDTO(user),
+                "roles", roleName,
+                "menuDTOS", menuDTOS
+        );
     }
 
 
-    public Object register(RegisterDTO registerDTO) {
-        if (!isValidEmail(registerDTO.getEmail())) {
+    public Object register(RegisterRequest registerRequest) {
+        if (!isValidEmail(registerRequest.getEmail())) {
             throw new BookShopAuthenticationException(
                     ErrorMessage.User.USER_ALREADY_EXISTS,
                     ErrorCode.CODE_ERROR,
@@ -98,7 +104,7 @@ public class AuthenticateService {
             );
         }
 
-        User user = userService.findByEmail(registerDTO.getEmail());
+        User user = userService.findByEmail(registerRequest.getEmail());
         if (user != null) {
             throw new BookShopAuthenticationException(
                     ErrorMessage.User.USER_ALREADY_EXISTS,
@@ -107,7 +113,7 @@ public class AuthenticateService {
             );
         }
 
-        if (!registerDTO.getPassword().equals(registerDTO.getRePassword())) {
+        if (!registerRequest.getPassword().equals(registerRequest.getRePassword())) {
             throw new BookShopAuthenticationException(
                     ErrorMessage.User.RE_PASSWORD_NOT_MATCH,
                     ErrorCode.CODE_ERROR,
@@ -115,12 +121,12 @@ public class AuthenticateService {
             );
         }
         User newUser = new User();
-        newUser.setEmail(registerDTO.getEmail());
-        newUser.setName(registerDTO.getName());
-        newUser.setAddress(registerDTO.getAddress());
+        newUser.setEmail(registerRequest.getEmail());
+        newUser.setName(registerRequest.getName());
+        newUser.setAddress(registerRequest.getAddress());
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        String encodedPassword = passwordEncoder.encode(registerDTO.getPassword());
+        String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
         newUser.setPassword(encodedPassword);
 
         userRepository.save(newUser);
@@ -131,7 +137,7 @@ public class AuthenticateService {
         userRole.setRole(roleUser);
         userRoleService.save(userRole);
 
-        return registerDTO;
+        return registerRequest;
     }
 
     public String createToken(User user) {

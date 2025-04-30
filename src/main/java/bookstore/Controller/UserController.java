@@ -1,6 +1,5 @@
 package bookstore.Controller;
 
-import bookstore.DTO.UserDTO;
 import bookstore.Exception.Constant.BSResponseEntity;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
@@ -9,7 +8,6 @@ import bookstore.Exception.DataNotFoundException;
 import bookstore.Request.UserRequest.ChangePasswordRequest;
 import bookstore.Request.UserRequest.UpdateUserRequest;
 import bookstore.Service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +48,6 @@ public class UserController {
         } catch (DataNotFoundException e) {
             ert.setMessage(e.getErrMessage());
             ert.setCode(ErrorCode.CODE_ERROR);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         catch (Exception e){
             ert.setMessage(e.getMessage());
@@ -70,7 +67,6 @@ public class UserController {
         } catch (DataNotFoundException e) {
             ert.setMessage(e.getErrMessage());
             ert.setCode(ErrorCode.CODE_ERROR);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         return ResponseEntity.ok().body(ert);
     }
@@ -86,12 +82,10 @@ public class UserController {
         } catch (DataNotFoundException e) {
             ert.setMessage(e.getErrMessage());
             ert.setCode(ErrorCode.CODE_ERROR);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         catch (DataInvalidException e) {
             ert.setMessage(e.getErrMessage());
             ert.setCode(ErrorCode.CODE_ERROR);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         catch (Exception e){
             ert.setMessage(e.getMessage());

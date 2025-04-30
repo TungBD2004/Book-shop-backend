@@ -7,6 +7,8 @@ import bookstore.Entity.User;
 import bookstore.Mapper.MenuMapper;
 import bookstore.Repository.MenuRoleRepository;
 import bookstore.Util.BSUtil;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,11 +19,14 @@ public class MenuRoleService {
     private final MenuMapper menuMapper;
     private final RoleService roleService;
     private final BSUtil bsUtil;
-    public MenuRoleService(MenuRoleRepository menuRoleRepository, MenuMapper menuMapper,RoleService roleService, BSUtil bsUtil) {
+    private final UserService userService;
+
+    public MenuRoleService(MenuRoleRepository menuRoleRepository, MenuMapper menuMapper, RoleService roleService, BSUtil bsUtil, UserService userService) {
         this.menuRoleRepository = menuRoleRepository;
         this.menuMapper = menuMapper;
         this.roleService = roleService;
         this.bsUtil = bsUtil;
+        this.userService = userService;
     }
 
     public Set<MenuDTO> getMenuDTO(List<Role> roles, Long parentId) {
@@ -44,21 +49,30 @@ public class MenuRoleService {
     }
 
     public Object getMenuHomepage() {
-        User currentLoginUser = bsUtil.getCurrentUserLogin();
-        Role role = new Role();
-        if(currentLoginUser != null) {
-            role = roleService.getHighestRole(currentLoginUser);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentLoginUser = null;
+
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            String email = auth.getName();
+            currentLoginUser = userService.findByEmail(email);
         }
-        else {
+
+        Role role;
+        if (currentLoginUser != null) {
+            role = roleService.getHighestRole(currentLoginUser);
+        } else {
             role = roleService.getRoleByName("USER");
         }
+
         List<Role> roles = new ArrayList<>();
         roles.add(role);
-        Set<MenuDTO> menuSet = new HashSet<>();
-        menuSet = getMenuDTO(roles,26L);
+
+        Set<MenuDTO> menuSet = getMenuDTO(roles, 26L);
+
         return Map.of(
                 "menu", menuSet
         );
     }
+
 
 }

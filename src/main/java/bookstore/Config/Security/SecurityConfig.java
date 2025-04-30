@@ -3,10 +3,10 @@ package bookstore.Config.Security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,12 +35,16 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // SecurityFilterChain cho /api/menu/homepage
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(1) // Ưu tiên cao hơn, xử lý trước
+    public SecurityFilterChain homepageFilterChain(HttpSecurity http, JwtDecoder jwtDecoder,
+                                                   JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         http
+                .securityMatcher("/api/menu/homepage") // Chỉ áp dụng cho /api/menu/homepage
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("*"));// Thêm localhost nếu cần
+                    config.setAllowedOrigins(List.of("*")); // Thêm localhost nếu cần
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(false);
@@ -48,7 +52,32 @@ public class SecurityConfig {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/**").permitAll() // Thêm nếu frontend cần DELETE
+                        .anyRequest().permitAll() // Cho phép tất cả request tới /api/menu/homepage
+                );
+
+        // Thêm custom filter để xử lý token cho /api/menu/homepage
+        http.addFilterBefore(new bookstore.Config.Security.OptionalJwtAuthenticationFilter(jwtDecoder, jwtAuthenticationConverter),
+                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    // SecurityFilterChain cho các request khác
+    @Bean
+    @Order(2) // Ưu tiên thấp hơn, xử lý sau
+    public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(request -> {
+                    var config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("*")); // Thêm localhost nếu cần
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(false);
+                    return config;
+                }))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/**").permitAll() // Giữ nguyên như code cũ
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -58,6 +87,7 @@ public class SecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
                 );
+
         return http.build();
     }
 
@@ -78,6 +108,4 @@ public class SecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
     }
-
-
 }

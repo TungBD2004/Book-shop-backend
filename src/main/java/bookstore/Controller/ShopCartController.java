@@ -1,15 +1,12 @@
 package bookstore.Controller;
 
 import bookstore.DTO.ShopCart.ProductShopCartDTO;
-import bookstore.Entity.ShopCart;
-import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.BSResponseEntity;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.DataInvalidException;
 import bookstore.Exception.DataNotFoundException;
 import bookstore.Service.ShopCartService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +32,10 @@ public class ShopCartController {
         catch(DataInvalidException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.badRequest().body(ert);
         }
         catch (DataNotFoundException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         return ResponseEntity.ok(ert);
     }
@@ -57,12 +52,10 @@ public class ShopCartController {
         catch(DataInvalidException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.badRequest().body(ert);
         }
         catch (DataNotFoundException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         return ResponseEntity.ok(ert);
     }
@@ -79,12 +72,10 @@ public class ShopCartController {
         catch(DataInvalidException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.badRequest().body(ert);
         }
         catch (DataNotFoundException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ert);
         }
         return ResponseEntity.ok(ert);
     }
