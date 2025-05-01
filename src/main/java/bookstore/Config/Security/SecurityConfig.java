@@ -1,10 +1,11 @@
 package bookstore.Config.Security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,21 +31,47 @@ public class SecurityConfig {
     @Value("${spring.jwt.signerKey}")
     private String signerKey;
 
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public SecurityConfig(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Đăng ký BlacklistFilter
+    @Bean
+    public FilterRegistrationBean<BlacklistFilter> blacklistFilterRegistration() {
+        FilterRegistrationBean<BlacklistFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new BlacklistFilter(redisTemplate));
+        registrationBean.addUrlPatterns("/*"); // Áp dụng cho tất cả URL
+        registrationBean.setOrder(100); // Thứ tự thấp hơn OptionalJwtAuthenticationFilter
+        return registrationBean;
+    }
+
+    // Đăng ký OptionalJwtAuthenticationFilter
+    @Bean
+    public FilterRegistrationBean<OptionalJwtAuthenticationFilter> optionalJwtAuthenticationFilterRegistration(
+            JwtDecoder jwtDecoder, JwtAuthenticationConverter jwtAuthenticationConverter) {
+        FilterRegistrationBean<OptionalJwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new OptionalJwtAuthenticationFilter(jwtDecoder, jwtAuthenticationConverter, redisTemplate));
+        registrationBean.addUrlPatterns("/api/menu/homepage"); // Chỉ áp dụng cho /api/menu/homepage
+        registrationBean.setOrder(50); // Thứ tự cao hơn BlacklistFilter
+        return registrationBean;
+    }
+
     // SecurityFilterChain cho /api/menu/homepage
     @Bean
-    @Order(1) // Ưu tiên cao hơn, xử lý trước
-    public SecurityFilterChain homepageFilterChain(HttpSecurity http, JwtDecoder jwtDecoder,
-                                                   JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+    @Order(1)
+    public SecurityFilterChain homepageFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/api/menu/homepage") // Chỉ áp dụng cho /api/menu/homepage
+                .securityMatcher("/api/menu/homepage")
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("*")); // Thêm localhost nếu cần
+                    config.setAllowedOrigins(List.of("*"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(false);
@@ -52,24 +79,20 @@ public class SecurityConfig {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .anyRequest().permitAll() // Cho phép tất cả request tới /api/menu/homepage
+                        .anyRequest().permitAll()
                 );
-
-        // Thêm custom filter để xử lý token cho /api/menu/homepage
-        http.addFilterBefore(new bookstore.Config.Security.OptionalJwtAuthenticationFilter(jwtDecoder, jwtAuthenticationConverter),
-                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     // SecurityFilterChain cho các request khác
     @Bean
-    @Order(2) // Ưu tiên thấp hơn, xử lý sau
+    @Order(2)
     public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("*")); // Thêm localhost nếu cần
+                    config.setAllowedOrigins(List.of("*"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(false);
@@ -77,7 +100,7 @@ public class SecurityConfig {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/**").permitAll() // Giữ nguyên như code cũ
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -103,7 +126,7 @@ public class SecurityConfig {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix(""); // Loại bỏ prefix nếu không cần
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;

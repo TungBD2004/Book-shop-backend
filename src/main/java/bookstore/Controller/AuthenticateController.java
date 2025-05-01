@@ -10,10 +10,7 @@ import bookstore.Request.LoginRequest;
 import bookstore.Service.AuthenticateService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -56,6 +53,22 @@ public class AuthenticateController {
         }
         return ResponseEntity.ok().body(ert);
     }
-
+    @PostMapping("/logout")
+    public ResponseEntity<BSResponseEntity> logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try {
+            String token = authorizationHeader.substring(7);
+            authenticateService.logout(token);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+            ert.setMessage("Đăng xuất thành công");
+        } catch (BookShopAuthenticationException e) {
+            ert.setCode(ErrorCode.CODE_ERROR);
+            ert.setMessage(e.getErrMessage());
+        } catch (Exception e) {
+            ert.setCode(ErrorCode.CODE_ERROR);
+            ert.setMessage(e.getMessage());
+        }
+        return ResponseEntity.ok().body(ert);
+    }
 
 }

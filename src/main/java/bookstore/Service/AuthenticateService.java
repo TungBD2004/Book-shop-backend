@@ -1,8 +1,6 @@
 package bookstore.Service;
 
-import bookstore.DTO.LoginDTO;
 import bookstore.DTO.MenuDTO;
-import bookstore.DTO.RegisterDTO;
 import bookstore.DTO.RegisterRequest;
 import bookstore.Entity.Role;
 import bookstore.Entity.User;
@@ -11,11 +9,9 @@ import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.Constant.ErrorObject;
-import bookstore.Exception.DataInvalidException;
 import bookstore.Mapper.UserMapper;
 import bookstore.Repository.UserRepository;
 import bookstore.Request.LoginRequest;
-import bookstore.Security.JWTToken;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -24,11 +20,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Service
@@ -158,6 +157,11 @@ public class AuthenticateService {
         } catch (JOSEException e) {
             return "Can Not Create Token";
         }
+    }
+    public void logout(String token) {
+        // Lưu token vào Redis blacklist với thời gian hết hạn là 7 ngày
+        String redisKey = "blacklist:token:" + token;
+        redisTemplate.opsForValue().set(redisKey, "invalid", 7, TimeUnit.DAYS);
     }
 
 

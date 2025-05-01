@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -17,10 +18,13 @@ public class OptionalJwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public OptionalJwtAuthenticationFilter(JwtDecoder jwtDecoder, JwtAuthenticationConverter jwtAuthenticationConverter) {
+    public OptionalJwtAuthenticationFilter(JwtDecoder jwtDecoder, JwtAuthenticationConverter jwtAuthenticationConverter,
+                                           RedisTemplate<String, String> redisTemplate) {
         this.jwtDecoder = jwtDecoder;
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -34,6 +38,8 @@ public class OptionalJwtAuthenticationFilter extends OncePerRequestFilter {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 try {
                     String token = authHeader.substring(7);
+
+                    // Xác thực token (BlacklistFilter đã kiểm tra danh sách đen)
                     JwtAuthenticationToken authentication = authenticateToken(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (JwtException ex) {
