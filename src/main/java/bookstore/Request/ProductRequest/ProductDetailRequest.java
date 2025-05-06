@@ -13,6 +13,7 @@ public class ProductDetailRequest {
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     @Size(min = 3, max = 255, message = "Tên sản phẩm phải từ 3 đến 255 ký tự")
+    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Không được chứa ký tự đặc biệt")
     private String name;
 
     @NotNull(message = "Giá không được để trống")
@@ -27,13 +28,15 @@ public class ProductDetailRequest {
 
     @NotBlank(message = "Tác giả không được để trống")
     @Size(min = 3, max = 255, message = "Tên tác giả phải từ 3 đến 255 ký tự")
+    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Tên tác giả không được chứa ký tự đặc biệt")
     private String author;
 
-    @NotBlank(message = "URL hình ảnh không được để trống")
+
     private String imageUrl;
 
     @NotBlank(message = "Tác giả không được để trống")
     @Size(min = 3, max = 255, message = "Tên tác giả phải từ 3 đến 255 ký tự")
+    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Thể loại không được chứa ký tự đặc biệt")
     private String category;
     private String description;
 }

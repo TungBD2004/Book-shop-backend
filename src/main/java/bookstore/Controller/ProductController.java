@@ -107,6 +107,7 @@ public class ProductController {
         BSResponseEntity ert = new BSResponseEntity();
         try{
             ert.setObject(productService.addProduct(productDetailRequest));
+            ert.setMessage(ErrorMessage.Product.CREATE_PRODUCT_SUCCESS);
             ert.setCode(ErrorCode.CODE_SUCCESS);
         }
         catch(DataInvalidException e){

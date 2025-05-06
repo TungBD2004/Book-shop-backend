@@ -34,7 +34,7 @@ public class BillService {
 
     public Object addBill(CreateBillRequest createBillRequest) {
         Bill bill = new Bill();
-        bill.setAddress(createBillRequest.getAddress());
+        bill.setAddress(createBillRequest.getAddress().trim().replaceAll("\\s+", " ").toLowerCase());
         bill.setPhoneNumber(createBillRequest.getPhoneNumber());
         bill.setDate(java.sql.Date.valueOf(localDate));
         bill.setUser(bsUtil.getCurrentUserLogin());
@@ -58,10 +58,8 @@ public class BillService {
         return null;
     }
 
-    public Object getBillByUser(Long userId){
-        User user = userService.getUserById(userId);
-        List<Bill> bills = billRepository.findBillByUserId(userId);
-        return bills;
+    public List<Bill> getBillByUser(Long userId){
+        return billRepository.findBillByUserId(userId);
     }
 
 }

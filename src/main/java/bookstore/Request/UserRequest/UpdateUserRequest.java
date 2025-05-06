@@ -1,6 +1,7 @@
 package bookstore.Request.UserRequest;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +13,12 @@ import javax.validation.constraints.Size;
 @Setter
 public class UpdateUserRequest {
     @NotBlank(message = "Tên không dược trống")
-    @Size(min = 1, max = 55, message = "Tên không hợp lệ")
+    @Size(min = 5, max = 55, message = "Tên không hợp lệ")
+    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Tên không được chứa ký tự đặc biệt")
     private String name;
 
     @NotBlank(message = "Địa chỉ không được để trống")
-    @Size(min= 1 , max = 255, message = "Địa chỉ không hợp lệ")
+    @Size(min= 5 , max = 255, message = "Địa chỉ không hợp lệ")
+    @Pattern(regexp = "^[\\p{L}0-9\\s]+$", message = "Địa chỉ không được chứa ký tự đặc biệt")
     private String address;
 }

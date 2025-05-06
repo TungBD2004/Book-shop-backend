@@ -1,9 +1,7 @@
 package bookstore.Service;
 
-import bookstore.DTO.LoginDTO;
 import bookstore.DTO.MenuDTO;
-import bookstore.DTO.RegisterDTO;
-import bookstore.DTO.RegisterRequest;
+import bookstore.Request.RegisterRequest;
 import bookstore.Entity.Role;
 import bookstore.Entity.User;
 import bookstore.Entity.UserRole;
@@ -11,11 +9,9 @@ import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.Constant.ErrorObject;
-import bookstore.Exception.DataInvalidException;
 import bookstore.Mapper.UserMapper;
 import bookstore.Repository.UserRepository;
 import bookstore.Request.LoginRequest;
-import bookstore.Security.JWTToken;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -24,11 +20,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
@@ -57,13 +55,21 @@ public class AuthenticateService {
         this.redisTemplate = redisTemplate;
     }
     private boolean isValidEmail(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         Pattern pattern = Pattern.compile(emailRegex);
         return pattern.matcher(email).matches();
     }
     public Object authenticate(LoginRequest loginRequest) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if (!isValidEmail(loginRequest.getEmail())) {
+            throw new BookShopAuthenticationException(
+                    ErrorMessage.User.EMAIL_INVALID,
+                    ErrorCode.CODE_ERROR,
+                    ErrorObject.USER
+            );
+        }
         User user = userService.findByEmail(loginRequest.getEmail());
+
         if (user == null) {
             throw new BookShopAuthenticationException(
                     ErrorMessage.User.USER_NOT_EXISTS,
@@ -98,7 +104,7 @@ public class AuthenticateService {
     public Object register(RegisterRequest registerRequest) {
         if (!isValidEmail(registerRequest.getEmail())) {
             throw new BookShopAuthenticationException(
-                    ErrorMessage.User.USER_ALREADY_EXISTS,
+                    ErrorMessage.User.EMAIL_INVALID,
                     ErrorCode.CODE_ERROR,
                     ErrorObject.USER
             );
@@ -122,8 +128,8 @@ public class AuthenticateService {
         }
         User newUser = new User();
         newUser.setEmail(registerRequest.getEmail());
-        newUser.setName(registerRequest.getName());
-        newUser.setAddress(registerRequest.getAddress());
+        newUser.setName(registerRequest.getName().trim().replaceAll("\\s+", " ").toLowerCase());
+        newUser.setAddress(registerRequest.getAddress().trim().replaceAll("\\s+", " ").toLowerCase());
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());

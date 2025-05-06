@@ -1,6 +1,8 @@
 package bookstore.Service;
 
+import bookstore.DTO.Bill.GetBillDTO;
 import bookstore.DTO.UserDTO;
+import bookstore.Entity.Bill;
 import bookstore.Entity.Role;
 import bookstore.Entity.User;
 import bookstore.Entity.UserRole;
@@ -9,23 +11,21 @@ import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.Constant.ErrorObject;
 import bookstore.Exception.DataInvalidException;
 import bookstore.Exception.DataNotFoundException;
+import bookstore.Mapper.BillMapper;
 import bookstore.Mapper.UserMapper;
 import bookstore.Repository.UserRepository;
 import bookstore.Request.UserRequest.ChangePasswordRequest;
 import bookstore.Request.UserRequest.UpdateUserRequest;
 import bookstore.Util.BSUtil;
-import org.apache.catalina.security.SecurityUtil;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -35,19 +35,23 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final BSUtil bsUtil;
     private final UserRoleService userRoleService;
+    private final BillService billService;
+    private final BillMapper billMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, RoleService roleService, PasswordEncoder passwordEncoder, BSUtil bsUtil, UserRoleService userRoleService) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, RoleService roleService, PasswordEncoder passwordEncoder, BSUtil bsUtil, UserRoleService userRoleService, @Lazy BillService billService, BillMapper billMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.bsUtil = bsUtil;
         this.userRoleService = userRoleService;
+        this.billService = billService;
+        this.billMapper = billMapper;
     }
 
     public User findByEmail(String email) {
-        var user = userRepository.findByEmailIgnoreCase(email);
-        return user;
+        return  userRepository.findByEmailIgnoreCase(email);
+
     }
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
@@ -101,4 +105,16 @@ public class UserService {
         userRepository.save(user);
         return null;
     }
+    public Object getInfoByOwner(){
+        User user = bsUtil.getCurrentUserLogin();
+        List<Bill> bills = billService.getBillByUser(user.getId());
+        List<GetBillDTO> billDTOS = new ArrayList<>();
+        for(Bill bill : bills) {
+            billDTOS.add(billMapper.toGetBillDTO(bill));
+        }
+
+        return Map.of("user", userMapper.UserToUserDTO(user),
+                "bills" , billDTOS);
+    }
+
 }

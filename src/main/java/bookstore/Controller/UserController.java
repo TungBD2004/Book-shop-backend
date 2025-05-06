@@ -18,7 +18,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/")
 public class UserController {
     private final UserService userService;
-    public UserController(UserService userService) {
+    public UserController( UserService userService) {
         this.userService = userService;
     }
     @GetMapping("/admin/user")
@@ -93,4 +93,28 @@ public class UserController {
         }
         return ResponseEntity.ok().body(ert);
     }
+
+    @GetMapping("/user/info")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN','USER')")
+    public ResponseEntity<BSResponseEntity> getUserInfo() {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.getInfoByOwner());
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (DataInvalidException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
 }

@@ -1,7 +1,7 @@
 package bookstore.Controller;
 
 
-import bookstore.DTO.RegisterRequest;
+import bookstore.Request.RegisterRequest;
 import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.BSResponseEntity;
 import bookstore.Exception.Constant.ErrorCode;
@@ -49,10 +49,10 @@ public class AuthenticateController {
         try {
             ert.setObject(authenticateService.register(registerRequest));
             ert.setCode(ErrorCode.CODE_SUCCESS);
-            ert.setMessage(ErrorMessage.Common.SUCCESS);
+            ert.setMessage(ErrorMessage.Common.REGISTER_SUCCESS);
         } catch (BookShopAuthenticationException e) {
             ert.setCode(ErrorCode.CODE_ERROR);
-            ert.setMessage(e.getMessage());
+            ert.setMessage(e.getErrMessage());
         }
         return ResponseEntity.ok().body(ert);
     }

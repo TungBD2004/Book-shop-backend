@@ -9,6 +9,7 @@ public class ErrorMessage {
         public static final String PERMISSION_DENIED = "Không có quyền truy cập!";
         public static final String EMAIL_OR_PASSWORD_INCORRECT = "Email hoặc mật khẩu không chính xác!";
         public static final String USER_ALREADY_EXISTS = "Email đã tồn tại!";
+        public static final String EMAIL_INVALID = "Email không hợp lệ";
         public static final String USER_NOT_EXISTS = "Email không tồn tại!";
         public static final String RE_PASSWORD_NOT_MATCH = "Mật khẩu nhập lại không chính xác!";
         public static final String UPDATE_USER_SUCCESS = "Cập nhật nguời dùng thành công!";
@@ -22,6 +23,7 @@ public class ErrorMessage {
         public static final String PRODUCT_NOT_FOUND = "Không tìm thấy sách!";
         public static final String UPDATE_PRODUCT_SUCCESS = "Cập nhật sách thành công!";
         public static final String DELETE_PRODUCT_SUCCESS = "Xoá sách thành công!";
+        public static final String CREATE_PRODUCT_SUCCESS = "Thêm sách thành công!";
     }
     public static class ShopCart{
         public static final String ADD_PRODUCT_TO_SHOPCART_WRONG = "Thêm sách không thành công!";
@@ -39,6 +41,7 @@ public class ErrorMessage {
     public static class Common{
         public static final String SUCCESS = "Thành công!";
         public static final String LOGIN_SUCCESS = "Đăng nhập thành công!";
+        public static final String REGISTER_SUCCESS = "Đăng ký thành công!";
         public static final String WRONG = "Thất bại!";
 
     }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -18,11 +18,13 @@ public class CreateBillRequest {
     private List<ProductDetailDTO> products;
 
     @NotBlank(message = "Địa chỉ không được để trống")
+    @Size(min = 5,message = "Địa chỉ không hợp lệ")
+    @Pattern(regexp = "^[\\p{L}0-9\\s]+$", message = "Địa chỉ không được chứa ký tự đặc biệt")
     private String address;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Size(min = 11, max = 11, message = "Số điện thoại phải có 11 ký tự")
-    @Pattern(regexp = "^(0[0-9]{9})$", message = "Số điện thoại không hợp lệ")
+// Chấp nhận số điện thoại 10 chữ số, bắt đầu bằng 0
+    @Pattern(regexp = "^0\\d{9}$", message = "Số điện thoại không hợp lệ")
     private String phoneNumber;
 
     @Max(value = 1000000000, message = "Tổng tiền không được vượt quá 1 tỷ")
