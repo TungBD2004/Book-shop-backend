@@ -59,24 +59,36 @@ public class UserService {
 
     }
     public Object getAllUser(){
-        List<User> users = userRepository.findAllUsers();;
+        List<User> users = userRepository.findAllUsers();
         List<UserDTO> dtos = new ArrayList<>();
         for(User user : users) {
             Role role = roleService.getHighestRole(user);
+            UserDTO userDTO = userMapper.UserToUserDTO(user);
+            userDTO.setRole(role.getName());
             if(role.getName().equals("USER") || role.getName().equals("ADMIN")) {
-                dtos.add(userMapper.UserToUserDTO(user));
+                dtos.add(userDTO);
             }
         }
         return dtos;
     }
-    public Object updateUser(Long id, UpdateUserRequest updateUserRequest) {
+    public Object updateUserByAdmin(Long id, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.USER));
-        user.setAddress(updateUserRequest.getAddress());
-        user.setName(updateUserRequest.getName());
+        user.setAddress(updateUserRequest.getAddress().trim().replaceAll("\\s+", " "));
+        user.setName(updateUserRequest.getName().trim().replaceAll("\\s+", " "));
         userRepository.save(user);
         return user;
     }
+
+    public Object updateUserByOwner(UpdateUserRequest updateUserRequest) {
+        User user = bsUtil.getCurrentUserLogin();
+        user.setAddress(updateUserRequest.getAddress().trim().replaceAll("\\s+", " "));
+        user.setName(updateUserRequest.getName().trim().replaceAll("\\s+", " "));
+        userRepository.save(user);
+        return user;
+    }
+
+
 
     public Object deleteUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
@@ -116,5 +128,41 @@ public class UserService {
         return Map.of("user", userMapper.UserToUserDTO(user),
                 "bills" , billDTOS);
     }
+
+    public Object resetPassword(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String newPassword = passwordEncoder.encode("12345");
+        user.setPassword(newPassword);
+        userRepository.save(user);
+        return null;
+    }
+
+    public Object addRoleAdmin(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
+        Role role = roleService.getHighestRole(user);
+        if(role.getName().equals("ADMIN") || role.getName().equals("SUPER_ADMIN")) {
+            throw new DataInvalidException(ErrorMessage.UserRole.USER_ALREADY_ADMIN,ErrorCode.CODE_ERROR, ErrorObject.USERROLE);
+        }
+        UserRole userRole = new UserRole();
+        userRole.setUser(user);
+        userRole.setRole(roleService.getRoleByName("ADMIN"));
+        userRoleService.save(userRole);
+        return null;
+    }
+    public Object removeRoleAdmin(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
+        Role role = roleService.getHighestRole(user);
+        if(role.getName().equals("USER") || role.getName().equals("SUPER_ADMIN")) {
+            throw new DataInvalidException(ErrorMessage.UserRole.USER_NOT_ADMIN,ErrorCode.CODE_ERROR, ErrorObject.USERROLE);
+        }
+        List<UserRole> userRole = userRoleService.getUserRoleByUserId(id);
+        userRoleService.delete(userRole);
+        return null;
+    }
+
 
 }

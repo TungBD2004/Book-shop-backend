@@ -3,6 +3,10 @@ package bookstore.Service;
 import bookstore.DTO.Bill.CreateBillDTO;
 import bookstore.DTO.Product.ProductDetailDTO;
 import bookstore.Entity.*;
+import bookstore.Exception.Constant.ErrorCode;
+import bookstore.Exception.Constant.ErrorMessage;
+import bookstore.Exception.Constant.ErrorObject;
+import bookstore.Exception.DataInvalidException;
 import bookstore.Repository.BillRepository;
 import bookstore.Request.BillRequest.CreateBillRequest;
 import bookstore.Util.BSUtil;
@@ -34,7 +38,7 @@ public class BillService {
 
     public Object addBill(CreateBillRequest createBillRequest) {
         Bill bill = new Bill();
-        bill.setAddress(createBillRequest.getAddress().trim().replaceAll("\\s+", " ").toLowerCase());
+        bill.setAddress(createBillRequest.getAddress().trim().replaceAll("\\s+", " "));
         bill.setPhoneNumber(createBillRequest.getPhoneNumber());
         bill.setDate(java.sql.Date.valueOf(localDate));
         bill.setUser(bsUtil.getCurrentUserLogin());
@@ -46,6 +50,9 @@ public class BillService {
             billProduct.setBill(bill);
             ShopCart shopCart = shopCartService.getById(productDetailDTO.getId());
             Product product = productService.getById(shopCart.getProduct().getId());
+            if(productDetailDTO.getQuantity()>product.getQuantity()){
+                throw new DataInvalidException(ErrorMessage.Product.PRODUCT_OUT_OF_QUANTITY, ErrorCode.CODE_ERROR, ErrorObject.PRODUCT);
+            }
             product.setQuantity(product.getQuantity() - productDetailDTO.getQuantity());
             productService.save(product);
             billProduct.setProduct(product);

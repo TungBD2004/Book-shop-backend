@@ -39,10 +39,10 @@ public class UserController {
 
     @PutMapping("admin/user/{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
-    public ResponseEntity<BSResponseEntity> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest updateUserRequest) {
+    public ResponseEntity<BSResponseEntity> updateUserByAdmin(@PathVariable Long id, @RequestBody UpdateUserRequest updateUserRequest) {
         BSResponseEntity ert = new BSResponseEntity();
         try{
-            ert.setObject(userService.updateUser(id, updateUserRequest));
+            ert.setObject(userService.updateUserByAdmin(id, updateUserRequest));
             ert.setMessage(ErrorMessage.User.UPDATE_USER_SUCCESS);
             ert.setCode(ErrorCode.CODE_SUCCESS);
         } catch (DataNotFoundException e) {
@@ -55,6 +55,26 @@ public class UserController {
         }
         return ResponseEntity.ok().body(ert);
     }
+
+    @PutMapping("/user")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN','USER')")
+    public ResponseEntity<BSResponseEntity> updateUserByOwner (@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.updateUserByOwner(updateUserRequest));
+            ert.setMessage(ErrorMessage.User.UPDATE_USER_SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
 
     @DeleteMapping("/admin/user/{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
@@ -117,4 +137,69 @@ public class UserController {
         return ResponseEntity.ok().body(ert);
     }
 
+    @PutMapping("/admin/user/reset-password/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+    public ResponseEntity<BSResponseEntity> resetPassword(@PathVariable Long id) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.resetPassword(id));
+            ert.setMessage(ErrorMessage.User.RESET_PASSWORD_SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        } catch (DataInvalidException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
+    @PutMapping("/admin/user/add-role-admin/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+    public ResponseEntity<BSResponseEntity> addRoleAdmin(@PathVariable Long id) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.addRoleAdmin(id));
+            ert.setMessage(ErrorMessage.User.ADD_ROLE_ADMIN_SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        } catch (DataInvalidException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
+    @PutMapping("/admin/user/remove-role-admin/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+    public ResponseEntity<BSResponseEntity> removeRoleAdmin(@PathVariable Long id) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.removeRoleAdmin(id));
+            ert.setMessage(ErrorMessage.User.REMOVE_ROLE_ADMIN_SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        } catch (DataInvalidException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
 }

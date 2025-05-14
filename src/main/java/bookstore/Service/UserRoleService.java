@@ -24,7 +24,9 @@ public class UserRoleService {
     public void save(UserRole userRole) {
         userRoleRepository.save(userRole);
     }
-
+    public List<UserRole> getUserRoleByUserId(Long id) {
+        return userRoleRepository.findUserRoleByUserId(id);
+    }
 
     public void delete(List<UserRole> userRole) {
         userRoleRepository.deleteAll(userRole);

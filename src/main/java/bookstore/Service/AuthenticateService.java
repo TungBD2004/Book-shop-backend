@@ -16,7 +16,6 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,18 +40,16 @@ public class AuthenticateService {
     private final MenuRoleService menuRoleService;
     private final RoleService roleService;
     private final UserRepository userRepository;
-    private final RedisTemplate<String, String> redisTemplate;
 
     public AuthenticateService(UserService userService, UserMapper userMapper, UserRoleService userRoleService,
                                MenuRoleService menuRoleService, RoleService roleService, UserRepository userRepository
-    , RedisTemplate<String, String> redisTemplate) {
+    ) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.userRoleService = userRoleService;
         this.menuRoleService = menuRoleService;
         this.roleService = roleService;
         this.userRepository = userRepository;
-        this.redisTemplate = redisTemplate;
     }
     private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
@@ -128,8 +125,8 @@ public class AuthenticateService {
         }
         User newUser = new User();
         newUser.setEmail(registerRequest.getEmail());
-        newUser.setName(registerRequest.getName().trim().replaceAll("\\s+", " ").toLowerCase());
-        newUser.setAddress(registerRequest.getAddress().trim().replaceAll("\\s+", " ").toLowerCase());
+        newUser.setName(registerRequest.getName().trim().replaceAll("\\s+", " "));
+        newUser.setAddress(registerRequest.getAddress().trim().replaceAll("\\s+", " "));
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());

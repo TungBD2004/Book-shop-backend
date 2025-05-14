@@ -16,6 +16,9 @@ public class ErrorMessage {
         public static final String DELETE_USER_SUCCESS = "Xoá người dùng thành công!";
         public static final String PASSWORD_INCORRECT = "Mật khẩu không chính xác!";
         public static final String CHANGE_PASSWORD_SUCCESS = "Đổi mật khẩu thành công!";
+        public static final String RESET_PASSWORD_SUCCESS = "Cập nhật mật khẩu về ban đầu!";
+        public static final String ADD_ROLE_ADMIN_SUCCESS = "Cấp quyền admin thành công!";
+        public static final String REMOVE_ROLE_ADMIN_SUCCESS ="Xoá quyền admin thành công!";
         public User() {
         }
     }
@@ -24,6 +27,7 @@ public class ErrorMessage {
         public static final String UPDATE_PRODUCT_SUCCESS = "Cập nhật sách thành công!";
         public static final String DELETE_PRODUCT_SUCCESS = "Xoá sách thành công!";
         public static final String CREATE_PRODUCT_SUCCESS = "Thêm sách thành công!";
+        public static final String PRODUCT_OUT_OF_QUANTITY ="Sách không đủ số lượng để mua!";
     }
     public static class ShopCart{
         public static final String ADD_PRODUCT_TO_SHOPCART_WRONG = "Thêm sách không thành công!";
@@ -37,6 +41,11 @@ public class ErrorMessage {
 
     public static class Bill{
         public static final String  ORDER_SUCCESS = "Đặt hàng thành công!";
+    }
+
+    public static class UserRole{
+        public static final String USER_ALREADY_ADMIN= "User đã là admin!";
+        public static final String USER_NOT_ADMIN = "User không là admin!";
     }
     public static class Common{
         public static final String SUCCESS = "Thành công!";

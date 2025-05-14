@@ -134,10 +134,6 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.lettuce/lettuce-core -->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>

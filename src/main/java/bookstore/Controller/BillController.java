@@ -6,6 +6,7 @@ import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.BSResponseEntity;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
+import bookstore.Exception.DataInvalidException;
 import bookstore.Request.BillRequest.CreateBillRequest;
 import bookstore.Service.BillService;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -36,6 +37,10 @@ public class BillController {
             responseEntity.setObject(billService.addBill(createBillRequest));
             responseEntity.setCode(ErrorCode.CODE_SUCCESS);
             responseEntity.setMessage(ErrorMessage.Bill.ORDER_SUCCESS);
+        }
+        catch (DataInvalidException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
         }
         catch (Exception ex) {
             responseEntity.setCode(ErrorCode.CODE_ERROR);

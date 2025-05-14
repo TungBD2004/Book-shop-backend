@@ -46,7 +46,7 @@ public class ProductService {
     }
 
     public Object getProductByName(String name) {
-        String nameBook = name.trim().replaceAll("\\s+", " ").toLowerCase();
+        String nameBook = name.trim().replaceAll("\\s+", " ");
         List<Product> products = productRepository.findByName(nameBook);
         List<ProductDetailDTO> productDetailDTOList = convertToProductDetailDTOList(products);
 
@@ -93,11 +93,11 @@ public class ProductService {
     }
 
     private void mapProductDetail(ProductDetailRequest productDTO, Product product) throws IOException {
-        product.setName(productDTO.getName().trim().replaceAll("\\s+", " ").toLowerCase());
+        product.setName(productDTO.getName().trim().replaceAll("\\s+", " "));
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setQuantity(productDTO.getQuantity());
-        product.setAuthor(productDTO.getAuthor().trim().replaceAll("\\s+", " ").toLowerCase());
+        product.setAuthor(productDTO.getAuthor().trim().replaceAll("\\s+", " "));
         if(productDTO.getImageUrl() != null) {
             String imageUrl = bsUtil.uploadImageBase64(productDTO.getImageUrl());
             product.setImageUrl(imageUrl);

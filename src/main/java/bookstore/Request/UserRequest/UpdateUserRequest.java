@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @AllArgsConstructor
 @Getter
@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 public class UpdateUserRequest {
     @NotBlank(message = "Tên không dược trống")
     @Size(min = 5, max = 55, message = "Tên không hợp lệ")
-    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Tên không được chứa ký tự đặc biệt")
+    @Pattern(regexp = "^[A-Za-zÀ-ỹà-ỹ\\s]+$", message = "Tên không được chứa ký tự đặc biệt hoặc số")
     private String name;
 
     @NotBlank(message = "Địa chỉ không được để trống")
