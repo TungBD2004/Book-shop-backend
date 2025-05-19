@@ -202,4 +202,50 @@ public class UserController {
         }
         return ResponseEntity.ok().body(ert);
     }
+
+    @GetMapping("/admin/user/{email}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+    public ResponseEntity<BSResponseEntity> findByEmail(@PathVariable String email) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.findUsersByEmail(email));
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        } catch (DataInvalidException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
+    @GetMapping("/admin/user/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+    public ResponseEntity<BSResponseEntity> findByEmail(@PathVariable Long id) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(userService.getInfoByOwnerById(id));
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+        } catch (DataNotFoundException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        } catch (DataInvalidException e) {
+            ert.setMessage(e.getErrMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        catch (Exception e){
+            ert.setMessage(e.getMessage());
+            ert.setCode(ErrorCode.CODE_ERROR);
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
+
 }

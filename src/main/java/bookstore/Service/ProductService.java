@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductService {
@@ -98,7 +99,7 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setQuantity(productDTO.getQuantity());
         product.setAuthor(productDTO.getAuthor().trim().replaceAll("\\s+", " "));
-        if(productDTO.getImageUrl() != null) {
+        if(productDTO.getImageUrl() != null && !Objects.equals(product.getImageUrl(),productDTO.getImageUrl()) ) {
             String imageUrl = bsUtil.uploadImageBase64(productDTO.getImageUrl());
             product.setImageUrl(imageUrl);
         }

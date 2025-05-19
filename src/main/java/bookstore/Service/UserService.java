@@ -129,6 +129,19 @@ public class UserService {
                 "bills" , billDTOS);
     }
 
+    public Object getInfoByOwnerById(Long id){
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.USER));
+        List<Bill> bills = billService.getBillByUser(user.getId());
+        List<GetBillDTO> billDTOS = new ArrayList<>();
+        for(Bill bill : bills) {
+            billDTOS.add(billMapper.toGetBillDTO(bill));
+        }
+
+        return Map.of("user", userMapper.UserToUserDTO(user),
+                "bills" , billDTOS);
+    }
+
     public Object resetPassword(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
@@ -164,5 +177,18 @@ public class UserService {
         return null;
     }
 
+    public Object findUsersByEmail(String email){
+        List<User> users = userRepository.findByEmail(email);
+        List<UserDTO> userDTOs = new ArrayList<>();
+        for(User user : users) {
+            Role role = roleService.getHighestRole(user);
+            UserDTO userDTO = userMapper.UserToUserDTO(user);
+            userDTO.setRole(role.getName());
+            if(role.getName().equals("USER") || role.getName().equals("ADMIN")) {
+                userDTOs .add(userDTO);
+            }
+        }
+        return userDTOs;
+    }
 
 }
