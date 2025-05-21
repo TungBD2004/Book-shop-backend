@@ -165,4 +165,23 @@ public class ProductController {
         return ResponseEntity.ok().body(ert);
     }
 
+    @GetMapping("/product/ranking")
+    public ResponseEntity<BSResponseEntity> getProductRanking() {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(productService.getProductRanking());
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
+        }
+        catch(DataInvalidException e){
+            ert.setCode(ErrorCode.CODE_ERROR);
+            ert.setMessage(e.getErrMessage());
+        }
+        catch (DataNotFoundException e){
+            ert.setCode(ErrorCode.CODE_ERROR);
+            ert.setMessage(e.getErrMessage());
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
 }

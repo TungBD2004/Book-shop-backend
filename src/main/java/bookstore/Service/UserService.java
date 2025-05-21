@@ -185,7 +185,7 @@ public class UserService {
             UserDTO userDTO = userMapper.UserToUserDTO(user);
             userDTO.setRole(role.getName());
             if(role.getName().equals("USER") || role.getName().equals("ADMIN")) {
-                userDTOs .add(userDTO);
+                userDTOs.add(userDTO);
             }
         }
         return userDTOs;

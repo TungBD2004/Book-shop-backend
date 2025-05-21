@@ -225,7 +225,7 @@ public class UserController {
         return ResponseEntity.ok().body(ert);
     }
 
-    @GetMapping("/admin/user/{id}")
+    @GetMapping("/admin/user/info/{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     public ResponseEntity<BSResponseEntity> findByEmail(@PathVariable Long id) {
         BSResponseEntity ert = new BSResponseEntity();

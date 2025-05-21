@@ -1,7 +1,9 @@
 package bookstore.Service;
 
+import bookstore.DTO.Product.GetRankingProduct;
 import bookstore.DTO.Product.ProductDTO;
 import bookstore.DTO.Product.ProductDetailDTO;
+import bookstore.DTO.Product.ProductSaleDTO;
 import bookstore.Entity.Product;
 import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.ErrorCode;
@@ -26,12 +28,14 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final CategoryService categoryService;
     private final BSUtil bsUtil;
+    private final BillProductService billProductService;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper, CategoryService categoryService, BSUtil bsUtil) {
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper, CategoryService categoryService, BSUtil bsUtil, BillProductService billProductService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.categoryService = categoryService;
         this.bsUtil = bsUtil;
+        this.billProductService = billProductService;
     }
 
     public Object getProductById(Long id) {
@@ -143,5 +147,21 @@ public class ProductService {
         productRepository.save(product);
         return null;
     }
+
+    public Object getProductRanking(){
+        List<GetRankingProduct> products = new ArrayList<>();
+        List<ProductSaleDTO> productSaleDTOS = billProductService.findSellingProduct();
+
+        productSaleDTOS.stream().limit(3).forEach(product -> {
+            Product newProduct = productRepository.findProductById(product.getProductId());
+            GetRankingProduct dto = new GetRankingProduct();
+            dto.setProduct(productMapper.toProductDTO(newProduct));
+            dto.setSellingQuantity(product.getTotalSold());
+            products.add(dto);
+        });
+
+        return products;
+    }
+
 
 }

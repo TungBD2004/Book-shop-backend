@@ -14,11 +14,13 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query(value = "select u from User u where u.email = :email and u.isDelete = FALSE")
     User findByEmailIgnoreCase(String email);
 
     @Query("select u from User u where u.isDelete = FALSE ")
     List<User> findAllUsers();
 
-    @Query("SELECT u FROM User u WHERE u.email LIKE %:email%")
+    @Query("SELECT u FROM User u WHERE u.email LIKE %:email% and u.isDelete = false ")
     List<User> findByEmail(@Param("email") String email);
 }

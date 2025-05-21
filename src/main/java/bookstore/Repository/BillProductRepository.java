@@ -1,9 +1,21 @@
 package bookstore.Repository;
 
+import bookstore.DTO.Product.ProductSaleDTO;
 import bookstore.Entity.BillProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface BillProductRepository extends JpaRepository<BillProduct, Long> {
+
+    @Query("SELECT bp.product.id AS productId, SUM(bp.quantity) AS totalSold " +
+            "FROM BillProduct bp " +
+            "WHERE FUNCTION('MONTH', bp.bill.date) = FUNCTION('MONTH', CURRENT_DATE) " +
+            "AND FUNCTION('YEAR', bp.bill.date) = FUNCTION('YEAR', CURRENT_DATE) " +
+            "GROUP BY bp.product.id " +
+            "ORDER BY totalSold DESC")
+    List<ProductSaleDTO> findSellingProduct();
 }

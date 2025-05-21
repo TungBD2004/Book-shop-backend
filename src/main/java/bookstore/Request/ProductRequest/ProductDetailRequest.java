@@ -34,8 +34,8 @@ public class ProductDetailRequest {
     @NotBlank(message = "Ảnh không được để trống")
     private String imageUrl;
 
-    @NotBlank(message = "Tác giả không được để trống")
-    @Size(min = 3, max = 255, message = "Tên tác giả phải từ 3 đến 255 ký tự")
+    @NotBlank(message = "Thể loại không được để trống")
+    @Size(min = 3, max = 255, message = "Tên thể loại phải từ 3 đến 255 ký tự")
     @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Thể loại không được chứa ký tự đặc biệt")
     private String category;
     private String description;
