@@ -20,6 +20,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "select p From Product p where p.id = :id and p.isDelete = FALSE ")
     Product findProductById(@Param("id") Long id);
 
+    @Query(value = "select p From Product p where p.id = :id ")
+    Product findProductAllById(@Param("id") Long id);
+
+
+
     @Query(value = "SELECT p FROM Product p where p.isDelete = FALSE ")
     List<Product> findAllProducts();
 }

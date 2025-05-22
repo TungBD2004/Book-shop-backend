@@ -85,7 +85,7 @@ public class BillService {
         List<BillProduct> billProducts = bill.getBillProducts();
         List<ProductDetailDTO> productDetailDTOs = new ArrayList<>();
         for(BillProduct billProduct : billProducts){
-            Product product = productService.getById(billProduct.getProduct().getId());
+            Product product = productService.findProductAllById(billProduct.getProduct().getId());
             ProductDetailDTO productDetailDTO = new ProductDetailDTO();
             productDetailDTO = productMapper.toProductDTO(product);
             productDetailDTO.setQuantity(billProduct.getQuantity());

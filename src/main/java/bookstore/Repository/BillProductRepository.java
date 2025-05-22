@@ -12,8 +12,8 @@ import java.util.List;
 public interface BillProductRepository extends JpaRepository<BillProduct, Long> {
 
     @Query("SELECT bp.product.id AS productId, SUM(bp.quantity) AS totalSold " +
-            "FROM BillProduct bp " +
-            "GROUP BY bp.product.id " +
+            "FROM BillProduct bp where bp.product.isDelete = false" +
+            " group by bp.product.id " +
             "ORDER BY totalSold DESC")
     List<ProductSaleDTO> findSellingProduct();
 }

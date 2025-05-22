@@ -154,6 +154,7 @@ public class ProductService {
 
         productSaleDTOS.stream().limit(3).forEach(product -> {
             Product newProduct = productRepository.findProductById(product.getProductId());
+            System.out.println(product.getProductId());
             GetRankingProduct dto = new GetRankingProduct();
             dto.setProduct(productMapper.toProductDTO(newProduct));
             dto.setSellingQuantity(product.getTotalSold());
@@ -163,5 +164,7 @@ public class ProductService {
         return products;
     }
 
-
+    public Product findProductAllById(Long id){
+        return productRepository.findProductAllById(id);
+    }
 }
