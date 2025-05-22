@@ -7,16 +7,14 @@ import bookstore.Exception.Constant.BSResponseEntity;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.DataInvalidException;
+import bookstore.Exception.DataNotFoundException;
 import bookstore.Request.BillRequest.CreateBillRequest;
 import bookstore.Service.BillService;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.stream.Collectors;
@@ -49,6 +47,28 @@ public class BillController {
 
         return ResponseEntity.ok().body(responseEntity);
     }
+
+    @GetMapping("/bill/detail/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
+    public ResponseEntity<BSResponseEntity> getBillDetail(@PathVariable Long id) {
+        BSResponseEntity responseEntity = new BSResponseEntity();
+        try {
+            responseEntity.setObject(billService.getBillDetail(id));
+            responseEntity.setCode(ErrorCode.CODE_SUCCESS);
+            responseEntity.setMessage(ErrorMessage.Common.SUCCESS);
+        }
+        catch (DataInvalidException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+        }
+        catch(DataNotFoundException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+
+        }
+        return ResponseEntity.ok().body(responseEntity);
+    }
+
 
 
 }

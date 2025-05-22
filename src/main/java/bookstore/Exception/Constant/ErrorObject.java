@@ -7,4 +7,5 @@ public class ErrorObject {
     public static final String PRODUCT = "product";
     public static final String SHOPCART = "shopcart";
     public static final String USERROLE = "userrole";
+    public static final String BILL = "bill";
 }

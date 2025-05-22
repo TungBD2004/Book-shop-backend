@@ -41,6 +41,7 @@ public class ErrorMessage {
 
     public static class Bill{
         public static final String  ORDER_SUCCESS = "Đặt hàng thành công!";
+        public static final String BILL_NOT_FOUND = "Đơn hàng không tồn tại!";
     }
 
     public static class UserRole{

@@ -29,7 +29,7 @@ public class OptionalJwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        if ("/api/menu/homepage".equals(path)) {
+        if ("/api/menu/homepage".equals(path)|| "/api/product/ranking".equals(path)) {
             String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 try {

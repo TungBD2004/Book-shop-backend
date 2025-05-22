@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain homepageFilterChain(HttpSecurity http, JwtDecoder jwtDecoder,
                                                    JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         http
-                .securityMatcher("/api/menu/homepage") // Chỉ áp dụng cho /api/menu/homepage
+                .securityMatcher("/api/menu/homepage","/api/product/ranking") // Chỉ áp dụng cho /api/menu/homepage
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("*")); // Thêm localhost nếu cần

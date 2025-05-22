@@ -18,7 +18,7 @@ public class BillMapper {
         // Format Date -> String dạng dd/MM/yy
         Date billDate = bill.getDate();
         if (billDate != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             getBillDTO.setDate(sdf.format(billDate));
         } else {
             getBillDTO.setDate(null); // hoặc ""
