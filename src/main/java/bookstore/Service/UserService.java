@@ -17,6 +17,7 @@ import bookstore.Repository.UserRepository;
 import bookstore.Request.UserRequest.ChangePasswordRequest;
 import bookstore.Request.UserRequest.UpdateUserRequest;
 import bookstore.Util.BSUtil;
+import bookstore.Util.Enum.RoleEnum;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,11 +54,6 @@ public class UserService {
         return  userRepository.findByEmailIgnoreCase(email);
 
     }
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->
-                new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.USER));
-
-    }
     public Object getAllUser(){
         List<User> users = userRepository.findAllUsers();
         List<UserDTO> dtos = new ArrayList<>();
@@ -65,7 +61,7 @@ public class UserService {
             Role role = roleService.getHighestRole(user);
             UserDTO userDTO = userMapper.UserToUserDTO(user);
             userDTO.setRole(role.getName());
-            if(role.getName().equals("USER") || role.getName().equals("ADMIN")) {
+            if(role.getName().equals(RoleEnum.USER.name()) || role.getName().equals(RoleEnum.ADMIN.name())) {
                 dtos.add(userDTO);
             }
         }
@@ -156,12 +152,12 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
         Role role = roleService.getHighestRole(user);
-        if(role.getName().equals("ADMIN") || role.getName().equals("SUPER_ADMIN")) {
+        if(role.getName().equals(RoleEnum.ADMIN.name()) || role.getName().equals(RoleEnum.SUPER_ADMIN.name())) {
             throw new DataInvalidException(ErrorMessage.UserRole.USER_ALREADY_ADMIN,ErrorCode.CODE_ERROR, ErrorObject.USERROLE);
         }
         UserRole userRole = new UserRole();
         userRole.setUser(user);
-        userRole.setRole(roleService.getRoleByName("ADMIN"));
+        userRole.setRole(roleService.getRoleByName(RoleEnum.ADMIN.name()));
         userRoleService.save(userRole);
         return null;
     }
@@ -169,7 +165,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
         Role role = roleService.getHighestRole(user);
-        if(role.getName().equals("USER") || role.getName().equals("SUPER_ADMIN")) {
+        if(role.getName().equals(RoleEnum.USER.name()) || role.getName().equals(RoleEnum.SUPER_ADMIN.name())) {
             throw new DataInvalidException(ErrorMessage.UserRole.USER_NOT_ADMIN,ErrorCode.CODE_ERROR, ErrorObject.USERROLE);
         }
         List<UserRole> userRole = userRoleService.getUserRoleByUserId(id);
@@ -184,7 +180,7 @@ public class UserService {
             Role role = roleService.getHighestRole(user);
             UserDTO userDTO = userMapper.UserToUserDTO(user);
             userDTO.setRole(role.getName());
-            if(role.getName().equals("USER") || role.getName().equals("ADMIN")) {
+            if(role.getName().equals(RoleEnum.USER.name()) || role.getName().equals(RoleEnum.ADMIN.name())) {
                 userDTOs.add(userDTO);
             }
         }
