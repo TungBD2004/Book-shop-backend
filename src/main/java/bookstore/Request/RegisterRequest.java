@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Pattern;
 public class RegisterRequest {
 
     @NotBlank(message = "Tên không được để trống")
-    @Size(min =5 ,max = 50, message = "Tên không hợp lệ ")
+    @Size(min =5 ,max = 254, message = "Tên không hợp lệ ")
     @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Tên không được chứa ký tự đặc biệt")
     private String name;
 
@@ -33,12 +33,12 @@ public class RegisterRequest {
     private String address;
 
     @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 5, max = 50, message = "Mật khẩu phải có từ 5 đến 50 ký tự")
+    @Size(min = 5, max = 254, message = "Mật khẩu phải có từ 5 đến 50 ký tự")
     @Pattern(regexp = "^\\S+$", message = "Mật khẩu không được chứa khoảng trắng")
     private String password;
 
     @NotBlank(message = "Vui lòng nhập lại mật khẩu")
-    @Size(min = 5, max = 50, message = "Nhập lại mật khẩu phải có từ 5 đến 50 ký tự")
+    @Size(min = 5, max = 254, message = "Nhập lại mật khẩu phải có từ 5 đến 50 ký tự")
     @Pattern(regexp = "^\\S+$", message = "Mật khẩu không được chứa khoảng trắng")
     private String rePassword;
 }

@@ -1,5 +1,6 @@
 package bookstore.DTO.Bill;
 
+import bookstore.DTO.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,5 @@ public class GetBillDTO {
     private String address;
     private String description;
     private String phoneNumber;
+    private UserDTO user;
 }

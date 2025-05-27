@@ -21,7 +21,7 @@ public class LoginRequest {
     private String email;
 
     @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 5, max = 50, message = "Mật khẩu phải từ 5 đến 50 ký tự")
+    @Size(min = 5, max = 254, message = "Mật khẩu phải từ 5 đến 50 ký tự")
     @Pattern(regexp = "^\\S+$", message = "Mật khẩu không được chứa khoảng trắng")
     private String password;
 }
