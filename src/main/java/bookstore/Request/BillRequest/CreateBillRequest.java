@@ -19,7 +19,7 @@ public class CreateBillRequest {
 
     @NotBlank(message = "Địa chỉ không được để trống")
     @Size(min = 5,message = "Địa chỉ không hợp lệ")
-    @Pattern(regexp = "^[\\p{L}0-9\\s]+$", message = "Địa chỉ không được chứa ký tự đặc biệt")
+    @Pattern(regexp = "^[\\p{L}0-9\\s,.-]+$", message = "Địa chỉ không được chứa ký tự đặc biệt")
     private String address;
 
     @NotBlank(message = "Số điện thoại không được để trống")

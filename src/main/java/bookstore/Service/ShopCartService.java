@@ -54,7 +54,9 @@ public class ShopCartService {
 
     public Object removeProductFromShopCart(Long id) {
         User currentUser = bsUtil.getCurrentUserLogin();
-        ShopCart shopCart = shopCartRepository.findByUserIdAndProductId(currentUser.getId(), id);
+        ShopCart shopCart = shopCartRepository.findById(id).orElseThrow(
+                () -> new DataNotFoundException(ErrorMessage.ShopCart.SHOPCART_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.SHOPCART)
+        );
         shopCartRepository.delete(shopCart);
         return null;
     }
