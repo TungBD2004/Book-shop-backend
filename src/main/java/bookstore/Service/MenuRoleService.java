@@ -7,6 +7,7 @@ import bookstore.Entity.User;
 import bookstore.Mapper.MenuMapper;
 import bookstore.Repository.MenuRoleRepository;
 import bookstore.Util.BSUtil;
+import bookstore.Util.Enum.RoleEnum;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,7 @@ public class MenuRoleService {
         if (currentLoginUser != null) {
             role = roleService.getHighestRole(currentLoginUser);
         } else {
-            role = roleService.getRoleByName("USER");
+            role = roleService.getRoleByName(RoleEnum.USER.name());
         }
 
         List<Role> roles = new ArrayList<>();

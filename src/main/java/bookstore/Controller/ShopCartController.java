@@ -21,8 +21,7 @@ public class ShopCartController {
 
     @PostMapping(value = "/shopcart")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
-    public ResponseEntity<BSResponseEntity> addProductToShopCart(@RequestBody ProductShopCartDTO dto
-                                                                 ) {
+    public ResponseEntity<BSResponseEntity> addProductToShopCart(@RequestBody ProductShopCartDTO dto) {
         BSResponseEntity ert = new BSResponseEntity();
         try{
             ert.setObject(shopCartService.addProductToShopCart(dto.getProductId()));

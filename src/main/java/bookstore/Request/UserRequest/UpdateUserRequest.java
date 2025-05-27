@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 @Setter
 public class UpdateUserRequest {
     @NotBlank(message = "Tên không dược trống")
-    @Size(min = 5, max = 55, message = "Tên không hợp lệ")
+    @Size(min = 5, max = 50, message = "Tên không hợp lệ")
     @Pattern(regexp = "^[A-Za-zÀ-ỹà-ỹ\\s]+$", message = "Tên không được chứa ký tự đặc biệt hoặc số")
     private String name;
 
