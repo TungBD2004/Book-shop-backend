@@ -1,6 +1,7 @@
 package bookstore.DTO.Bill;
 
 import bookstore.DTO.Product.ProductDetailDTO;
+import bookstore.Util.Enum.BillStatusEnum;
 import lombok.Data;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class BillDetailDTO {
     private String address;
     private String description;
     private String phoneNumber;
+    private String status;
     List<ProductDetailDTO> products;
 
 }

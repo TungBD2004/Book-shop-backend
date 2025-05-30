@@ -21,7 +21,7 @@ public class User {
 
     @Email
     @Size(min = 5, max = 254)
-    @Column(length = 254, unique = true, nullable = false)
+    @Column(length = 254, nullable = false)
     private String email;
 
     @Size(min = 5, max = 254)

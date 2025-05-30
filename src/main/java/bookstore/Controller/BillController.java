@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -69,6 +70,51 @@ public class BillController {
         return ResponseEntity.ok().body(responseEntity);
     }
 
+    @GetMapping("/admin/bill")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    public ResponseEntity<BSResponseEntity> getAllBill() {
+        BSResponseEntity responseEntity = new BSResponseEntity();
+        try {
+            responseEntity.setObject(billService.getAllBillByAdmin());
+            responseEntity.setCode(ErrorCode.CODE_SUCCESS);
+            responseEntity.setMessage(ErrorMessage.Common.SUCCESS);
+        }
+        catch (DataInvalidException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+        }
+        catch(DataNotFoundException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
 
+        }
+        return ResponseEntity.ok().body(responseEntity);
+    }
+
+    @GetMapping("/admin/bill/search")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    public ResponseEntity<BSResponseEntity> getBillBySearchType(@RequestParam String email,
+                                                                @RequestParam String fromDate,
+                                                                @RequestParam String toDate,
+                                                                @RequestParam String status) {
+        BSResponseEntity responseEntity = new BSResponseEntity();
+        try {
+            responseEntity.setObject(billService.getBillBySearchType(email,fromDate,toDate,status));
+            responseEntity.setCode(ErrorCode.CODE_SUCCESS);
+            responseEntity.setMessage(ErrorMessage.Common.SUCCESS);
+        }
+        catch (DataInvalidException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+        }
+        catch(DataNotFoundException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok().body(responseEntity);
+    }
 
 }

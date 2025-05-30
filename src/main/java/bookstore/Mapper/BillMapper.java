@@ -28,7 +28,7 @@ public class BillMapper {
         getBillDTO.setDescription(bill.getDescription());
         getBillDTO.setPhoneNumber(bill.getPhoneNumber());
         getBillDTO.setTotalPrice(bill.getTotalPrice());
-
+        getBillDTO.setStatus(bill.getStatus());
         return getBillDTO;
     }
 }

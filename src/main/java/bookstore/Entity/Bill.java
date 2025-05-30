@@ -34,6 +34,9 @@ public class Bill {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "status")
+    private String status;
+
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id")
     private User user;
