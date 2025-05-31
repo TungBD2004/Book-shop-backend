@@ -61,7 +61,7 @@ public class BillService {
         bill.setDate(java.sql.Date.valueOf(localDate));
         bill.setUser(bsUtil.getCurrentUserLogin());
         bill.setTotalPrice(createBillRequest.getTotalPrice());
-        bill.setStatus(String.valueOf(BillStatusEnum.PENDING));
+        bill.setStatus("Chờ xử lý");
         billRepository.save(bill);
         List<BillProduct> billProducts = new ArrayList<>();
         for(ProductDetailDTO productDetailDTO : createBillRequest.getProducts()){
@@ -85,7 +85,7 @@ public class BillService {
     }
     public Object getAllBillByAdmin(){
 
-        List<Bill> bills = billRepository.findAll();
+        List<Bill> bills = billRepository.findAlls();
         List<GetBillDTO> getBillDTOs = new ArrayList<>();
         for(Bill bill : bills){
             User user = bill.getUser();

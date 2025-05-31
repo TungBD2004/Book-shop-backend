@@ -1,6 +1,7 @@
 package bookstore.Repository;
 
 import bookstore.Entity.Bill;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,11 +19,19 @@ public interface BillRepository extends JpaRepository<Bill, Long> {
             "WHERE (:email IS NULL OR :email = '' OR b.user.email LIKE CONCAT('%', :email, '%')) " +
             "AND (:fromDate IS NULL OR b.date >= :fromDate) " +
             "AND (:toDate IS NULL OR b.date <= :toDate) " +
-            "AND (:status IS NULL OR :status = '' OR b.status = :status)")
+            "AND (:status IS NULL OR :status = '' OR b.status = :status)" +
+            "ORDER BY b.date DESC "
+            )
+
     List<Bill> findBySearchType(@Param("email") String email,
                                 @Param("fromDate") Date fromDate,
                                 @Param("toDate") Date toDate,
                                 @Param("status") String status);
 
-
+    @Query(value =
+            """
+               select b from Bill b
+               order by b.date DESC
+            """)
+    List<Bill> findAlls();
 }
