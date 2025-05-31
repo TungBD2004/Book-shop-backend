@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -97,7 +98,7 @@ public class AuthenticateService {
         );
     }
 
-
+    @Transactional
     public Object register(RegisterRequest registerRequest) {
         if (!isValidEmail(registerRequest.getEmail())) {
             throw new BookShopAuthenticationException(

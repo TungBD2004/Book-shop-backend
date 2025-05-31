@@ -18,6 +18,7 @@ import bookstore.Request.UserRequest.ChangePasswordRequest;
 import bookstore.Request.UserRequest.UpdateUserRequest;
 import bookstore.Util.BSUtil;
 import bookstore.Util.Enum.RoleEnum;
+import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,6 +68,7 @@ public class UserService {
         }
         return dtos;
     }
+    @Transactional
     public Object updateUserByAdmin(Long id, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.USER));
@@ -76,6 +78,7 @@ public class UserService {
         return user;
     }
 
+    @Transactional
     public Object updateUserByOwner(UpdateUserRequest updateUserRequest) {
         User user = bsUtil.getCurrentUserLogin();
         user.setAddress(updateUserRequest.getAddress().trim().replaceAll("\\s+", " "));
@@ -85,7 +88,7 @@ public class UserService {
     }
 
 
-
+    @Transactional
     public Object deleteUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND, ErrorCode.CODE_ERROR, ErrorObject.USER));
@@ -97,6 +100,7 @@ public class UserService {
         return null;
     }
 
+    @Transactional
     public Object changePassword(ChangePasswordRequest changePasswordRequest) {
         User user = bsUtil.getCurrentUserLogin();
         boolean isAuthenticated = passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword());
@@ -138,6 +142,7 @@ public class UserService {
                 "bills" , billDTOS);
     }
 
+    @Transactional
     public Object resetPassword(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
@@ -148,6 +153,7 @@ public class UserService {
         return null;
     }
 
+    @Transactional
     public Object addRoleAdmin(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));
@@ -161,6 +167,7 @@ public class UserService {
         userRoleService.save(userRole);
         return null;
     }
+    @Transactional
     public Object removeRoleAdmin(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.User.USER_NOT_FOUND,ErrorCode.CODE_ERROR, ErrorObject.USER));

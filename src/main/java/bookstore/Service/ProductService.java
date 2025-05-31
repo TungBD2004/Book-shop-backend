@@ -14,6 +14,7 @@ import bookstore.Mapper.ProductMapper;
 import bookstore.Repository.ProductRepository;
 import bookstore.Request.ProductRequest.ProductDetailRequest;
 import bookstore.Util.BSUtil;
+import jakarta.transaction.Transactional;
 import org.antlr.v4.runtime.misc.ObjectEqualityComparator;
 import org.springframework.stereotype.Service;
 
@@ -110,6 +111,7 @@ public class ProductService {
 
         product.setCategory(categoryService.getByName(productDTO.getCategory()));
     }
+    @Transactional
     public Object addProduct(ProductDetailRequest productDTO) {
         Product product = new Product();
         try {
@@ -120,7 +122,7 @@ public class ProductService {
         productRepository.save(product);
         return productMapper.toProductDTO(product);
     }
-
+    @Transactional
     public Object updateProduct(ProductDetailRequest productDTO) {
         Product product = productRepository.findById(productDTO.getId())
                 .orElseThrow(() -> new DataNotFoundException(
@@ -139,7 +141,7 @@ public class ProductService {
         return productMapper.toProductDTO(product);
     }
 
-
+    @Transactional
     public Object deleteProduct(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException(ErrorMessage.Product.PRODUCT_NOT_FOUND, ErrorCode.CODE_ERROR,ErrorObject.PRODUCT));

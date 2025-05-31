@@ -18,6 +18,7 @@ import bookstore.Request.BillRequest.CreateBillRequest;
 import bookstore.Util.BSUtil;
 import bookstore.Util.Enum.BillStatusEnum;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BillService {
@@ -51,7 +53,7 @@ public class BillService {
         this.billMapper = billMapper;
         this.userMapper = userMapper;
     }
-
+    @Transactional
     public Object addBill(CreateBillRequest createBillRequest) {
         Bill bill = new Bill();
         bill.setAddress(createBillRequest.getAddress().trim().replaceAll("\\s+", " "));
@@ -137,12 +139,44 @@ public class BillService {
             productDetailDTO.setQuantity(billProduct.getQuantity());
             productDetailDTOs.add(productDetailDTO);
         }
+        billDetailDTO.setUser(userMapper.UserToUserDTO(bill.getUser()));
         billDetailDTO.setProducts(productDetailDTOs);
         return billDetailDTO;
     }
 
     public List<Bill> getBillByUser(Long userId){
         return billRepository.findBillByUserId(userId);
+    }
+
+    @Transactional
+    public void updateStatus(Long id,String newStatus){
+        Bill bill = billRepository.findById(id).orElseThrow(() ->
+                new DataNotFoundException(ErrorMessage.Bill.BILL_NOT_FOUND,ErrorCode.CODE_ERROR,ErrorObject.BILL));
+
+        switch (bill.getStatus()) {
+            case "Đang giao":
+                if (Objects.equals(newStatus, "Chờ xử lý") || Objects.equals(newStatus, "Đã hủy")) {
+                    throw new IllegalStateException("Không thể chuyển từ Đang giao sang trạng thái này.");
+                }
+                break;
+            case "Đã giao":
+                if(!Objects.equals(newStatus, "Đã giao")){
+                    throw new IllegalStateException("Đơn hàng đã giao không được thay đổi trạng thái.");
+                }
+                break;
+            case "Chờ xử lý":
+                if (Objects.equals(newStatus, "Đã giao")) {
+                    throw new IllegalStateException("Không thể chuyển từ Chờ xử lý sang Đã giao trực tiếp.");
+                }
+                break;
+            case "Đã hủy":
+                if(!Objects.equals(newStatus, "Đã hủy")){
+                    throw new IllegalStateException("Đơn hàng đã hủy không được thay đổi trạng thái.");
+                }
+                break;
+        }
+        bill.setStatus(newStatus);
+        billRepository.save(bill);
     }
 
 }

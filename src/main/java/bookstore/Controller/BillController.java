@@ -9,6 +9,7 @@ import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Exception.DataInvalidException;
 import bookstore.Exception.DataNotFoundException;
 import bookstore.Request.BillRequest.CreateBillRequest;
+import bookstore.Request.BillRequest.UpdateBillStatusRequest;
 import bookstore.Service.BillService;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
@@ -111,7 +112,31 @@ public class BillController {
             responseEntity.setCode(ErrorCode.CODE_ERROR);
             responseEntity.setMessage(e.getErrMessage());
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok().body(responseEntity);
+    }
+
+    @PutMapping("/admin/bill")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    public ResponseEntity<BSResponseEntity> updateBillStatus(@RequestBody UpdateBillStatusRequest updateBillStatusRequest) {
+        BSResponseEntity responseEntity = new BSResponseEntity();
+        try {
+            billService.updateStatus(updateBillStatusRequest.getId(),updateBillStatusRequest.getStatus());
+            responseEntity.setCode(ErrorCode.CODE_SUCCESS);
+            responseEntity.setMessage(ErrorMessage.Common.SUCCESS);
+        }
+        catch (DataInvalidException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+        }
+        catch(DataNotFoundException e){
+            responseEntity.setCode(ErrorCode.CODE_ERROR);
+            responseEntity.setMessage(e.getErrMessage());
+
+        }
+        catch (Exception e){
             throw new RuntimeException(e);
         }
         return ResponseEntity.ok().body(responseEntity);

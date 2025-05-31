@@ -14,6 +14,7 @@ import bookstore.Mapper.ProductMapper;
 import bookstore.Mapper.ShopCartMapper;
 import bookstore.Repository.ShopCartRepository;
 import bookstore.Util.BSUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class ShopCartService {
         this.productMapper = productMapper;
     }
 
+    @Transactional
     public Object addProductToShopCart(Long productId) {
         User currentUser = bsUtil.getCurrentUserLogin();
         ShopCart shopCart = shopCartRepository.findByUserIdAndProductId(currentUser.getId(), productId);
