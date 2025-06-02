@@ -166,7 +166,7 @@ public class BillService {
                 break;
             case "Chờ xử lý":
                 if (Objects.equals(newStatus, "Đã giao")) {
-                    throw new IllegalStateException("Không thể chuyển từ Chờ xử lý sang Đã giao trực tiếp.");
+                    throw new IllegalStateException("Không thể chuyển từ Chờ xử lý sang Đã giao");
                 }
                 break;
             case "Đã hủy":
