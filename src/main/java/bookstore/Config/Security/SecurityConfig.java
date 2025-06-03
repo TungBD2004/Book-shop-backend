@@ -35,16 +35,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // SecurityFilterChain cho /api/menu/homepage
     @Bean
-    @Order(1) // Ưu tiên cao hơn, xử lý trước
+    @Order(1)
     public SecurityFilterChain homepageFilterChain(HttpSecurity http, JwtDecoder jwtDecoder,
                                                    JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         http
-                .securityMatcher("/api/menu/homepage","/api/product/ranking") // Chỉ áp dụng cho /api/menu/homepage
+                .securityMatcher("/api/menu/homepage","/api/product/ranking")
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("*")); // Thêm localhost nếu cần
+                    config.setAllowedOrigins(List.of("*"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(false);
@@ -52,7 +51,7 @@ public class SecurityConfig {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .anyRequest().permitAll() // Cho phép tất cả request tới /api/menu/homepage
+                        .anyRequest().permitAll()
                 );
 
         // Thêm custom filter để xử lý token cho /api/menu/homepage
@@ -62,9 +61,8 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // SecurityFilterChain cho các request khác
     @Bean
-    @Order(2) // Ưu tiên thấp hơn, xử lý sau
+    @Order(2)
     public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> {
@@ -77,7 +75,7 @@ public class SecurityConfig {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/**").permitAll() // Giữ nguyên như code cũ
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -103,7 +101,7 @@ public class SecurityConfig {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix(""); // Loại bỏ prefix nếu không cần
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;

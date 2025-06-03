@@ -37,16 +37,13 @@ public class OptionalJwtAuthenticationFilter extends OncePerRequestFilter {
                     JwtAuthenticationToken authentication = authenticateToken(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (JwtException ex) {
-                    // Token sai hoặc không hợp lệ, bỏ qua và cho đi tiếp
                     SecurityContextHolder.clearContext();
                 }
             } else {
-                // Không có token, cho đi tiếp
                 SecurityContextHolder.clearContext();
             }
             filterChain.doFilter(request, response);
         } else {
-            // Các endpoint khác, để Spring Security xử lý bình thường
             filterChain.doFilter(request, response);
         }
     }

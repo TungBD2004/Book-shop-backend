@@ -137,6 +137,7 @@ public class BillService {
             ProductDetailDTO productDetailDTO = new ProductDetailDTO();
             productDetailDTO = productMapper.toProductDTO(product);
             productDetailDTO.setQuantity(billProduct.getQuantity());
+            productDetailDTO.setPrice(billProduct.getPrice());
             productDetailDTOs.add(productDetailDTO);
         }
         billDetailDTO.setUser(userMapper.UserToUserDTO(bill.getUser()));

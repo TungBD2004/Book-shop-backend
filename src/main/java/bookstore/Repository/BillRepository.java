@@ -22,7 +22,6 @@ public interface BillRepository extends JpaRepository<Bill, Long> {
             "AND (:status IS NULL OR :status = '' OR b.status = :status)" +
             "ORDER BY b.date DESC "
             )
-
     List<Bill> findBySearchType(@Param("email") String email,
                                 @Param("fromDate") Date fromDate,
                                 @Param("toDate") Date toDate,
