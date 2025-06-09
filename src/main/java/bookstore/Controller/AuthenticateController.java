@@ -1,12 +1,13 @@
 package bookstore.Controller;
 
 
-import bookstore.Request.RegisterRequest;
 import bookstore.Exception.BookShopAuthenticationException;
 import bookstore.Exception.Constant.BSResponseEntity;
 import bookstore.Exception.Constant.ErrorCode;
 import bookstore.Exception.Constant.ErrorMessage;
 import bookstore.Request.LoginRequest;
+import bookstore.Request.RefreshTokenRequest;
+import bookstore.Request.RegisterRequest;
 import bookstore.Service.AuthenticateService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +58,18 @@ public class AuthenticateController {
         return ResponseEntity.ok().body(ert);
     }
 
+    @PostMapping("/refreshToken")
+    public ResponseEntity<BSResponseEntity> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshToken) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try {
+            ert.setObject(authenticateService.getTokenByRefreshToken(refreshToken.getRefreshToken()));
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
+        } catch (BookShopAuthenticationException e) {
+            ert.setCode(ErrorCode.CODE_ERROR);
+            ert.setMessage(e.getErrMessage());
+        }
+        return ResponseEntity.ok().body(ert);
+    }
 
 }
