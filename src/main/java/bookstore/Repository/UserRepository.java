@@ -15,12 +15,12 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query(value = "select u from User u where u.email = :email and u.isDelete = FALSE")
+    @Query(value = "select u from User u where u.email = :email and u.isDelete = FALSE and u.isActive = TRUE")
     User findByEmailIgnoreCase(String email);
 
-    @Query("select u from User u where u.isDelete = FALSE ")
+    @Query("select u from User u where u.isDelete = FALSE and u.isActive = TRUE")
     List<User> findAllUsers();
 
-    @Query("SELECT u FROM User u WHERE u.email LIKE %:email% and u.isDelete = false ")
+    @Query("SELECT u FROM User u WHERE u.email LIKE %:email% and u.isDelete = false and u.isActive = TRUE")
     List<User> findByEmail(@Param("email") String email);
 }
