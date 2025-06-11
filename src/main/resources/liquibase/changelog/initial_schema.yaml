@@ -1,0 +1,415 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1739306760000-1
+      author: duytung
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user
+              - column:
+                  name: email
+                  type: VARCHAR(254)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: VARCHAR(254)
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+              - column:
+                  name: address
+                  type: VARCHAR(254)
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+              - column:
+                  name: is_delete
+                  type: BOOLEAN
+                  defaultValue: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: false
+  - changeSet:
+      id: 1739306760000-2
+      author: duytung
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_role
+              - column:
+                  name: name
+                  type: VARCHAR(254)
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+  - changeSet:
+      id: 1739306760000-3
+      author: duytung
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_product
+              - column:
+                  name: name
+                  type: VARCHAR(254)
+              - column:
+                  name: price
+                  type: BIGINT
+              - column:
+                  name: quantity
+                  type: BIGINT
+              - column:
+                  name: author
+                  type: VARCHAR(254)
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+              - column:
+                  name: img_url
+                  type: VARCHAR(254)
+              - column:
+                  name: is_delete
+                  type: BOOLEAN
+                  defaultValue: false
+  - changeSet:
+      id: 1739306760000-4
+      author: duytung
+      changes:
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_category
+              - column:
+                  name: name
+                  type: VARCHAR(254)
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+  - changeSet:
+      id: 1739306760000-5
+      author: duytung
+      changes:
+        - createTable:
+            tableName: menu
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_menu
+              - column:
+                  name: name
+                  type: VARCHAR(254)
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+  - changeSet:
+      id: 1739306760000-6
+      author: duytung
+      changes:
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_role
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_delete
+                  type: BOOLEAN
+                  defaultValue: false
+  - changeSet:
+      id: 1739306760000-7
+      author: duytung
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_user_role_user
+            baseTableName: user_role
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_user_role_role
+            baseTableName: user_role
+            baseColumnNames: role_id
+            referencedTableName: role
+            referencedColumnNames: id
+  - changeSet:
+      id: 1739306760000-8
+      author: duytung
+      changes:
+        - createTable:
+            tableName: menu_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_menu_role
+              - column:
+                  name: menu_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 1739306760000-9
+      author: duytung
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_menu_role_role
+            baseTableName: menu_role
+            baseColumnNames: role_id
+            referencedTableName: role
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_menu_role_menu
+            baseTableName: menu_role
+            baseColumnNames: menu_id
+            referencedTableName: menu
+            referencedColumnNames: id
+  - changeSet:
+      id: 1739306760000-10
+      author: duytung
+      changes:
+        - createTable:
+            tableName: refresh_token
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_refresh_token
+              - column:
+                  name: refresh_token
+                  type: VARCHAR(254)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expired_date
+                  type: DATETIME
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 1739306760000-11
+      author: duytung
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_refresh_token_user
+            baseTableName: refresh_token
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+  - changeSet:
+      id: 1739306760000-24
+      author: duytung
+      changes:
+        - createTable:
+            tableName: bill
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_bill
+              - column:
+                  name: date
+                  type: DATETIME
+              - column:
+                  name: total_price
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: VARCHAR(20)
+              - column:
+                  name: address
+                  type: VARCHAR(254)
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 1739306760000-25
+      author: duytung
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_bill_user
+            baseTableName: bill
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+  - changeSet:
+      id: 1739306760000-12
+      author: duytung
+      changes:
+        - createTable:
+            tableName: shop_cart
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_shop_cart
+              - column:
+                  name: quantity
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(254)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 1739306760000-13
+      author: duytung
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_shop_cart_user
+            baseTableName: shop_cart
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_shop_cart_product
+            baseTableName: shop_cart
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+  - changeSet:
+      id: 1739306760000-14
+      author: duytung
+      changes:
+        - createTable:
+            tableName: bill_product
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_bill_product
+              - column:
+                  name: quantity
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bill_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 1739306760000-15
+      author: duytung
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_bill_product_bill
+            baseTableName: bill_product
+            baseColumnNames: bill_id
+            referencedTableName: bill
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_bill_product_product
+            baseTableName: bill_product
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
