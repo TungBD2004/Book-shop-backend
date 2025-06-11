@@ -50,4 +50,7 @@ public class User {
 
     @Column(name = "is_delete")
     private Boolean isDelete = false;
+
+    @Column(name = "is_active")
+    private Boolean isActive = false;
 }

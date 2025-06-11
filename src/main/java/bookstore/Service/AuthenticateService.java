@@ -18,15 +18,21 @@ import bookstore.Request.RegisterRequest;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Service
@@ -45,10 +51,14 @@ public class AuthenticateService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final EmailService emailService;
+
+    @Autowired
+    private  StringRedisTemplate redisTemplate;
 
     public AuthenticateService(UserService userService, UserMapper userMapper, UserRoleService userRoleService,
                                MenuRoleService menuRoleService, RoleService roleService, UserRepository userRepository,
-                               RefreshTokenRepository refreshTokenRepository) {
+                               RefreshTokenRepository refreshTokenRepository,EmailService emailService) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.userRoleService = userRoleService;
@@ -56,6 +66,7 @@ public class AuthenticateService {
         this.roleService = roleService;
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.emailService = emailService;
     }
 
     public Object authenticate(LoginRequest loginRequest) {
@@ -74,7 +85,7 @@ public class AuthenticateService {
     }
 
     @Transactional
-    public Object register(RegisterRequest request) {
+    public Object register(RegisterRequest request) throws MessagingException, IOException {
         validateEmail(request.getEmail());
 
         if (userService.findByEmail(request.getEmail()) != null) {
@@ -98,6 +109,7 @@ public class AuthenticateService {
         newUser.setName(trimString(request.getName()));
         newUser.setAddress(trimString(request.getAddress()));
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setIsActive(false);
 
         userRepository.save(newUser);
 
@@ -106,6 +118,20 @@ public class AuthenticateService {
         userRole.setUser(newUser);
         userRole.setRole(defaultRole);
         userRoleService.save(userRole);
+
+        // Tạo token và lưu vào Redis
+        String token = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set(token, newUser.getId().toString(), 24, TimeUnit.HOURS);
+        // Gửi mail xác minh
+        emailService.sendHtmlEmail(
+                newUser.getEmail(),
+                "Xác minh tài khoản",
+                "verify_email.html",
+                Map.of(
+                        "name", newUser.getName(),
+                        "link", "http://localhost:8080/api/verify-email?token=" + token
+                )
+        );
 
         return request;
     }
@@ -185,6 +211,31 @@ public class AuthenticateService {
         } catch (JOSEException e) {
             throw new RuntimeException("Unable to create JWT", e);
         }
+    }
+
+
+    public Object verifyEmailToken(String token) {
+        String userIdStr = redisTemplate.opsForValue().get(token);
+
+        if (userIdStr == null) {
+            return ResponseEntity.badRequest()
+                    .body("Token không hợp lệ hoặc đã hết hạn.");
+        }
+
+        Long userId = Long.parseLong(userIdStr);
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body("Người dùng không tồn tại.");
+        }
+
+        User user = optionalUser.get();
+        user.setIsActive(true);
+        userRepository.save(user);
+        redisTemplate.delete(token);
+
+        return null;
     }
 }
 

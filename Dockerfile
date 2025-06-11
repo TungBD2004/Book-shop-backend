@@ -1,5 +1,5 @@
 # Giai đoạn build
-FROM maven:4.0.0-openjdk-22.0.1 AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 

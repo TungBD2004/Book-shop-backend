@@ -10,13 +10,12 @@ import bookstore.Request.RefreshTokenRequest;
 import bookstore.Request.RegisterRequest;
 import bookstore.Service.AuthenticateService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/")
@@ -54,6 +53,8 @@ public class AuthenticateController {
         } catch (BookShopAuthenticationException e) {
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return ResponseEntity.ok().body(ert);
     }
@@ -66,6 +67,21 @@ public class AuthenticateController {
             ert.setCode(ErrorCode.CODE_SUCCESS);
             ert.setMessage(ErrorMessage.Common.SUCCESS);
         } catch (BookShopAuthenticationException e) {
+            ert.setCode(ErrorCode.CODE_ERROR);
+            ert.setMessage(e.getErrMessage());
+        }
+        return ResponseEntity.ok().body(ert);
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<BSResponseEntity> verifyEmail(@RequestParam String token) {
+        BSResponseEntity ert = new BSResponseEntity();
+        try{
+            ert.setObject(authenticateService.verifyEmailToken(token));
+            ert.setCode(ErrorCode.CODE_SUCCESS);
+            ert.setMessage(ErrorMessage.Common.SUCCESS);
+        }
+        catch (BookShopAuthenticationException e){
             ert.setCode(ErrorCode.CODE_ERROR);
             ert.setMessage(e.getErrMessage());
         }
